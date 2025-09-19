@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.proptit.todohive"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.proptit.todohive"
-        minSdk = 34
-        targetSdk = 36
+        minSdk = 24
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -32,6 +32,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+    }
+    buildFeatures {
+        viewBinding = true
+        dataBinding = true
     }
 }
 
