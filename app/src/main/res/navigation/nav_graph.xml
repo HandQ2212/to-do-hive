@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/onboading">
+
+    <fragment
+        android:id="@+id/onboading"
+        android:name="com.proptit.todohive.ui.OnboadingFragment"
+        android:label="fragment_onboading"
+        tools:layout="@layout/fragment_onboading" >
+        <action
+            android:id="@+id/action_onboading_to_startScreenFragment"
+            app:destination="@id/startScreenFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/startScreenFragment"
+        android:name="com.proptit.todohive.ui.StartScreenFragment"
+        android:label="fragment_start_screen"
+        tools:layout="@layout/fragment_start_screen" >
+        <action
+            android:id="@+id/action_startScreenFragment_to_logInFragment"
+            app:destination="@id/logInFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/logInFragment"
+        android:name="com.proptit.todohive.ui.LogInFragment"
+        android:label="fragment_log_in"
+        tools:layout="@layout/fragment_log_in" >
+        <action
+            android:id="@+id/action_logInFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_logInFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.proptit.todohive.ui.RegisterFragment"
+        android:label="fragment_register"
+        tools:layout="@layout/fragment_register" >
+        <action
+            android:id="@+id/action_registerFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.proptit.todohive.ui.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_emptyFragment"
+            app:destination="@id/emptyFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_taskFragment"
+            app:destination="@id/taskFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/emptyFragment"
+        android:name="com.proptit.todohive.ui.EmptyFragment"
+        android:label="fragment_empty"
+        tools:layout="@layout/fragment_empty" />
+    <fragment
+        android:id="@+id/addTaskFragment"
+        android:name="com.proptit.todohive.ui.AddTaskFragment"
+        android:label="fragment_add_task"
+        tools:layout="@layout/fragment_add_task" >
+        <action
+            android:id="@+id/action_addTaskFragment_to_taskAlarmFragment2"
+            app:destination="@id/taskAlarmFragment2" />
+        <action
+            android:id="@+id/action_addTaskFragment_to_taskPriorityFragment"
+            app:destination="@id/taskPriorityFragment" />
+        <action
+            android:id="@+id/action_addTaskFragment_to_categoryFragment"
+            app:destination="@id/categoryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/taskAlarmFragment2"
+        android:name="com.proptit.todohive.ui.TaskAlarmFragment"
+        android:label="fragment_task_alarm"
+        tools:layout="@layout/fragment_task_alarm" />
+    <fragment
+        android:id="@+id/taskPriorityFragment"
+        android:name="com.proptit.todohive.ui.TaskPriorityFragment"
+        android:label="fragment_task_priority"
+        tools:layout="@layout/fragment_task_priority" />
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="com.proptit.todohive.ui.CategoryFragment"
+        android:label="fragment_category"
+        tools:layout="@layout/fragment_category" >
+        <action
+            android:id="@+id/action_categoryFragment_to_createCategoriesFragment"
+            app:destination="@id/createCategoriesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createCategoriesFragment"
+        android:name="com.proptit.todohive.ui.CreateCategoriesFragment"
+        android:label="fragment_create_categories"
+        tools:layout="@layout/fragment_create_categories" />
+    <fragment
+        android:id="@+id/taskFragment"
+        android:name="com.proptit.todohive.ui.TaskFragment"
+        android:label="fragment_task"
+        tools:layout="@layout/fragment_task" >
+        <action
+            android:id="@+id/action_taskFragment_to_editTaskTitleFragment"
+            app:destination="@id/editTaskTitleFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editTaskTitleFragment"
+        android:name="com.proptit.todohive.ui.EditTaskTitleFragment"
+        android:label="fragment_edit_task_title"
+        tools:layout="@layout/fragment_edit_task_title" >
+        <action
+            android:id="@+id/action_editTaskTitleFragment_to_taskAlarmFragment2"
+            app:destination="@id/taskAlarmFragment2" />
+        <action
+            android:id="@+id/action_editTaskTitleFragment_to_taskPriorityFragment"
+            app:destination="@id/taskPriorityFragment" />
+        <action
+            android:id="@+id/action_editTaskTitleFragment_to_categoryFragment"
+            app:destination="@id/categoryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/calendarFragment"
+        android:name="com.proptit.todohive.ui.CalendarFragment"
+        android:label="fragment_calendar"
+        tools:layout="@layout/fragment_calendar" >
+        <action
+            android:id="@+id/action_calendarFragment_to_taskFragment"
+            app:destination="@id/taskFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/focusFragment"
+        android:name="com.proptit.todohive.ui.FocusFragment"
+        android:label="fragment_focus"
+        tools:layout="@layout/fragment_focus" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.proptit.todohive.ui.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_appSettingFragment"
+            app:destination="@id/appSettingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/appSettingFragment"
+        android:name="com.proptit.todohive.ui.AppSettingFragment"
+        android:label="fragment_app_setting"
+        tools:layout="@layout/fragment_app_setting" />
+
+
+</navigation>
