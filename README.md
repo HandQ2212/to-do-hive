@@ -40,6 +40,8 @@
 
 - File Figma giao diện ![Figma](https://www.figma.com/design/LRVrvGHMESFCsBnefyLQmP/UpTodo---Todo-list-app-UI-Kit--Community-?node-id=0-1&p=f&t=FNBNRS5aGF9ye1jw-0)
 - Biểu đồ UML Database Design 
+  - Entity Relationship Diagram:
+  ![](app/uml/ERDiagram.png)
   - Activity Diagram:
   ![](app/uml/ActivityDiagram.png)
   - Class Diagram:
