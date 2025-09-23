@@ -1,25 +1,9 @@
-<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+ <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_auth"
-    app:startDestination="@id/onboardingFragment">
+    app:startDestination="@id/loginFragment">
 
-    <fragment
-        android:id="@+id/onboardingFragment"
-        android:name="com.proptit.todohive.ui.onboarding.OnboadingFragment">
-        <action
-            android:id="@+id/action_onboarding_to_start"
-            app:destination="@id/startScreenFragment"/>
-    </fragment>
-
-    <fragment
-        android:id="@+id/startScreenFragment"
-        android:name="com.proptit.todohive.ui.onboarding.StartScreenFragment">
-        <action
-            android:id="@+id/action_to_login"
-            app:destination="@id/loginFragment"/>
-    </fragment>
-
-    <fragment
+     <fragment
         android:id="@+id/loginFragment"
         android:name="com.proptit.todohive.ui.auth.LogInFragment">
         <action
