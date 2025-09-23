@@ -1,4 +1,4 @@
-package com.proptit.todohive.ui
+package com.proptit.todohive.ui.home
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
