@@ -2,7 +2,6 @@
     <style name="Theme.ToDoHive.Splash" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowSplashScreenBackground">@color/dark</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_logo</item>
-        <item name="android:windowSplashScreenAnimationDuration">1000</item>
     </style>
     <style name="Theme.ToDoHive" parent="Theme.Material3.DayNight.NoActionBar" />
 </resources>

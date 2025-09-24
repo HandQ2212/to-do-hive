@@ -2,18 +2,19 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/indexFragment"
     android:id="@+id/nav_home">
 
     <fragment
-        android:id="@+id/homeFragment"
-        android:name="com.proptit.todohive.ui.home.HomeFragment"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
+        android:id="@+id/indexFragment"
+        android:name="com.proptit.todohive.ui.home.IndexFragment"
+        android:label="fragment_index"
+        tools:layout="@layout/fragment_index" >
         <action
-            android:id="@+id/action_homeFragment_to_emptyFragment"
+            android:id="@+id/action_indexFragment_to_emptyFragment"
             app:destination="@id/emptyFragment" />
         <action
-            android:id="@+id/action_homeFragment_to_taskFragment"
+            android:id="@+id/action_indexFragment_to_taskFragment"
             app:destination="@id/taskFragment" />
     </fragment>
     <fragment
