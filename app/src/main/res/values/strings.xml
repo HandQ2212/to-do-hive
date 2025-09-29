@@ -11,4 +11,15 @@
     <string name="cd_mark_undone">Mark as not done</string>
     <string name="undo">Undo</string>
     <string name="deleted_fmt">Deleted “%1$s”</string>
+    <string name="task_priority">Task Priority</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="use_this_time">Use this time</string>
+    <string name="time">Time</string>
+    <string name="choose_time">Choose Time</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="next_week">Next week</string>
+    <string name="clear">Clear</string>
+    <string name="date">Date</string>
 </resources>

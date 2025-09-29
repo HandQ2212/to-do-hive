@@ -58,8 +58,8 @@ class IndexFragment : Fragment() {
     }
 
     private fun attachSwipeToDelete() {
-        val swipe = SwipeToDeleteCallback(requireContext()) { vh ->
-            val pos = vh.bindingAdapterPosition
+        val swipe = SwipeToDeleteCallback(requireContext()) { viewHolder ->
+            val pos = viewHolder.bindingAdapterPosition
             val item = adapter.currentList.getOrNull(pos) ?: return@SwipeToDeleteCallback
             taskViewModel.onSwipeDelete(item.task)
             showDeletionSnackbar(item.task)
@@ -89,20 +89,46 @@ class IndexFragment : Fragment() {
 
     private fun customizeSnackbar(snack: Snackbar) {
         val ctx = requireContext()
-        snack.view.backgroundTintList =
-            android.content.res.ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.gray))
+        val view = snack.view
 
-        val tv = snack.view.findViewById<android.widget.TextView>(
+        val radiusPx = (12 * resources.displayMetrics.density).toInt()
+        val bgColor  = ContextCompat.getColor(ctx, R.color.gray)
+
+        val shape = com.google.android.material.shape.MaterialShapeDrawable(
+            com.google.android.material.shape.ShapeAppearanceModel()
+                .toBuilder()
+                .setAllCornerSizes(radiusPx.toFloat())
+                .build()
+        ).apply {
+            fillColor = android.content.res.ColorStateList.valueOf(bgColor)
+            elevation = (6 * resources.displayMetrics.density)
+        }
+        view.background = shape
+
+        (view.layoutParams as? ViewGroup.MarginLayoutParams)?.let { lp ->
+            val m = (12 * resources.displayMetrics.density).toInt()
+            lp.setMargins(m, m, m, m)
+            view.layoutParams = lp
+        }
+
+        val textView = view.findViewById<android.widget.TextView>(
             com.google.android.material.R.id.snackbar_text
         )
+        val actionBtn = view.findViewById<android.widget.Button>(
+            com.google.android.material.R.id.snackbar_action
+        )
+
+        textView.setTextColor(ContextCompat.getColor(ctx, R.color.white))
+        actionBtn.setTextColor(ContextCompat.getColor(ctx, R.color.warning))
 
         ContextCompat.getDrawable(ctx, R.drawable.ic_warning)?.mutate()?.let { d ->
             DrawableCompat.setTint(d, ContextCompat.getColor(ctx, R.color.warning))
-            tv.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null)
-            tv.compoundDrawablePadding = (8 * resources.displayMetrics.density).toInt()
-            tv.maxLines = 3
+            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null)
+            textView.compoundDrawablePadding = (8 * resources.displayMetrics.density).toInt()
+            textView.maxLines = 3
         }
     }
+
 
     private fun initUndoTimerBar() {
         binding.undoTimer.isIndeterminate = false

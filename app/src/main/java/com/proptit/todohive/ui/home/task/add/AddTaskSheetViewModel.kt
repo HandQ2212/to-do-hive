@@ -52,7 +52,7 @@ class AddTaskSheetViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun setPickedPriority(p: Int) {
-        pickedPriority.value = p.coerceIn(1, 3)
+        pickedPriority.value = p.coerceIn(1, 10)
     }
 
     fun save(onSuccess: () -> Unit, onError: (Throwable) -> Unit) {
@@ -84,5 +84,8 @@ class AddTaskSheetViewModel(app: Application) : AndroidViewModel(app) {
         pickedInstant.value = null
         pickedCategoryId.value = null
         pickedPriority.value = 1
+    }
+    fun clearPickedInstant() {
+        pickedInstant.value = null
     }
 }

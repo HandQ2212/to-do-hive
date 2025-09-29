@@ -48,5 +48,10 @@ class HomeActivity : AppCompatActivity() {
             view.setPadding(sys.left, sys.top, sys.right, 0)
             insets
         }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNav) { v, insets ->
+            val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, sys.bottom)
+            insets
+        }
     }
 }

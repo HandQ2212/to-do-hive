@@ -11,89 +11,136 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.proptit.todohive.databinding.BottomsheetPickTimeBinding
 import com.proptit.todohive.ui.home.task.add.AddTaskSheetViewModel
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.*
 
 class PickTimeSheet : BottomSheetDialogFragment() {
 
     private var _binding: BottomsheetPickTimeBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: AddTaskSheetViewModel by activityViewModels()
+
+    private val vm: AddTaskSheetViewModel by activityViewModels()
 
     private var pickedDate: LocalDate? = null
     private var pickedTime: LocalTime? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    private val zone: ZoneId get() = ZoneId.systemDefault()
+    private val DEFAULT_TIME = LocalTime.of(9, 0)
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = BottomsheetPickTimeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel.pickedInstant.value?.let { instant ->
-            val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-            pickedDate = zonedDateTime.toLocalDate()
-            pickedTime = zonedDateTime.toLocalTime()
-            binding.tvSummary.text = zonedDateTime.toString()
+        vm.pickedInstant.value?.let { instant ->
+            val zdt = instant.atZone(zone)
+            pickedDate = zdt.toLocalDate()
+            pickedTime = zdt.toLocalTime()
+        }
+        updateUiSummary()
+
+        binding.chipToday.setOnClickListener {
+            val today = LocalDate.now(zone)
+            pickedDate = today
+            if (pickedTime == null) pickedTime = DEFAULT_TIME
+            updateUiSummary()
+        }
+        binding.chipTomorrow.setOnClickListener {
+            val d = LocalDate.now(zone).plusDays(1)
+            pickedDate = d
+            if (pickedTime == null) pickedTime = DEFAULT_TIME
+            updateUiSummary()
+        }
+        binding.chipNextWeek.setOnClickListener {
+            val d = LocalDate.now(zone).plusWeeks(1)
+            pickedDate = d
+            if (pickedTime == null) pickedTime = DEFAULT_TIME
+            updateUiSummary()
+        }
+        binding.chipClear.setOnClickListener {
+            pickedDate = null
+            pickedTime = null
+            updateUiSummary()
         }
 
-        viewModel.pickedInstant.observe(viewLifecycleOwner) { instant ->
-            instant?.let {
-                val zonedDateTime = ZonedDateTime.ofInstant(it, ZoneId.systemDefault())
-                binding.tvSummary.text = zonedDateTime.toString()
-            }
-        }
+        binding.cardPickDate.setOnClickListener { openDatePicker() }
+        binding.cardPickTime.setOnClickListener { openTimePicker() }
 
-        binding.btnPickDate.setOnClickListener {
-            val picker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Pick date")
-                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                .build()
-            picker.addOnPositiveButtonClickListener { millis ->
-                pickedDate = Instant.ofEpochMilli(millis)
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate()
-                updateSummary()
-            }
-            picker.show(parentFragmentManager, "date_picker")
-        }
-
-        binding.btnPickTime.setOnClickListener {
-            val now = pickedTime ?: LocalTime.now()
-            val picker = MaterialTimePicker.Builder()
-                .setTitleText("Pick time")
-                .setTimeFormat(TimeFormat.CLOCK_24H)
-                .setHour(now.hour)
-                .setMinute(now.minute)
-                .build()
-            picker.addOnPositiveButtonClickListener {
-                pickedTime = LocalTime.of(picker.hour, picker.minute)
-                updateSummary()
-            }
-            picker.show(parentFragmentManager, "time_picker")
-        }
-
-        binding.btnConfirm.setOnClickListener {
-            val d = pickedDate ?: LocalDate.now()
-            val t = pickedTime ?: LocalTime.of(9, 0)
-            val instant = ZonedDateTime.of(d, t, ZoneId.systemDefault()).toInstant()
-            viewModel.setPickedInstant(instant)
-            dismiss()
-        }
+        binding.btnCancel.setOnClickListener { dismiss() }
+        binding.btnConfirm.setOnClickListener { onConfirm() }
     }
 
-    private fun updateSummary() {
+    private fun openDatePicker() {
+        val initialDate = pickedDate ?: vm.pickedInstant.value?.atZone(zone)?.toLocalDate() ?: LocalDate.now(zone)
+        val selection = initialDate.atStartOfDay(zone).toInstant().toEpochMilli()
+
+        val picker = MaterialDatePicker.Builder.datePicker()
+            .setTitleText("Pick date")
+            .setSelection(selection)
+            .build()
+
+        picker.addOnPositiveButtonClickListener { utcMillis ->
+            pickedDate = Instant.ofEpochMilli(utcMillis).atZone(zone).toLocalDate()
+            updateUiSummary()
+        }
+        picker.show(parentFragmentManager, "date_picker")
+    }
+
+    private fun openTimePicker() {
+        val seed = pickedTime ?: vm.pickedInstant.value?.atZone(zone)?.toLocalTime() ?: LocalTime.now(zone)
+        val picker = MaterialTimePicker.Builder()
+            .setTitleText("Pick time")
+            .setTimeFormat(TimeFormat.CLOCK_24H)
+            .setHour(seed.hour)
+            .setMinute(seed.minute)
+            .build()
+
+        picker.addOnPositiveButtonClickListener {
+            pickedTime = LocalTime.of(picker.hour, picker.minute)
+            updateUiSummary()
+        }
+        picker.show(parentFragmentManager, "time_picker")
+    }
+
+    private fun onConfirm() {
+        if (pickedDate == null && pickedTime == null) {
+            vm.clearPickedInstant()
+            dismiss()
+            return
+        }
+        val d = pickedDate ?: LocalDate.now(zone)
+        val t = pickedTime ?: DEFAULT_TIME
+        val instant = ZonedDateTime.of(d, t, zone).toInstant()
+        vm.setPickedInstant(instant)
+        dismiss()
+    }
+
+    private fun updateUiSummary() {
         val date = pickedDate
         val time = pickedTime
-        if (date != null && time != null) {
-            val zonedDateTime = ZonedDateTime.of(date, time, ZoneId.systemDefault())
-            binding.tvSummary.text = zonedDateTime.toString()
+
+        when {
+            date == null && time == null -> {
+                binding.summary  = "No time selected"
+                binding.dateText = "—"
+                binding.timeText = "—"
+            }
+            date != null && time != null -> {
+                val zdt = ZonedDateTime.of(date, time, zone)
+                binding.summary  = TimeFmt.full(zdt)
+                binding.dateText = TimeFmt.date(zdt.toLocalDate())
+                binding.timeText = TimeFmt.time(zdt.toLocalTime())
+            }
+            date != null -> {
+                binding.summary  = "On ${TimeFmt.date(date)} (no time)"
+                binding.dateText = TimeFmt.date(date)
+                binding.timeText = "—"
+            }
+            else -> {
+                time?.let { binding.summary  = "At ${TimeFmt.time(it)} (today)" }
+                binding.dateText = TimeFmt.date(LocalDate.now(zone))
+                binding.timeText = TimeFmt.time(time!!)
+            }
         }
     }
 

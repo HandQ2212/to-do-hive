@@ -104,14 +104,14 @@
             android:layout_width="0dp"
             android:layout_height="4dp"
             android:visibility="gone"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
             app:trackThickness="4dp"
-            app:trackColor="#333333"
-            app:indicatorColor="?attr/colorPrimary"
+            app:trackColor="@color/gray"
+            app:indicatorColor="@color/warning"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="37dp"/>
+            android:layout_marginBottom="41dp"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
