@@ -44,8 +44,8 @@ interface TaskDao {
     """)
     fun observeCompleted(): Flow<List<TaskWithCategory>>
 
-    @Query("UPDATE tasks SET title = :title, even_at = :evenAt, priority = :priority, category_id = :categoryId WHERE task_id = :taskId")
-    suspend fun update(taskId: Long, title: String, evenAt: Instant, priority: Int, categoryId: Long?)
+    @Query("UPDATE tasks SET title = :title, even_at = :evenAt, priority = :priority, category_id = :categoryId, description = :description WHERE task_id = :taskId")
+    suspend fun update(taskId: Long, title: String, evenAt: Instant, priority: Int, categoryId: Long?, description: String)
 
     @Query("UPDATE tasks SET is_completed = :done WHERE task_id = :taskId")
     suspend fun setCompleted(taskId: Long, done: Boolean)
@@ -66,4 +66,7 @@ interface TaskDao {
         start: Instant,
         end: Instant
     ): Flow<List<TaskWithCategory>>
+
+    @androidx.room.Query("UPDATE tasks SET is_completed = NOT is_completed WHERE task_id = :taskId")
+    suspend fun toggleCompleted(taskId: Long)
 }

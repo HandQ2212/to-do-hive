@@ -9,28 +9,43 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.proptit.todohive.R
 import com.proptit.todohive.databinding.ActivityHomeBinding
+import com.proptit.todohive.ui.home.task.add.AddTaskSheet
 
 class HomeActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityHomeBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        initBinding()
+        setUpWindowInsets()
+        setupNavigation()
+        setupFabAdd()
+    }
+
+    private fun initBinding() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setUpWindowInsets()
+    }
 
+    private fun setupNavigation() {
         val navHost = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHost.navController
-
         binding.bottomNav.setupWithNavController(navController)
     }
 
+    private fun setupFabAdd() {
+        binding.fabAdd.setOnClickListener {
+            AddTaskSheet().show(supportFragmentManager, "add_task_sheet")
+        }
+    }
+
     private fun setUpWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(sys.left, sys.top, sys.right, 0)
+            view.setPadding(sys.left, sys.top, sys.right, 0)
             insets
         }
     }

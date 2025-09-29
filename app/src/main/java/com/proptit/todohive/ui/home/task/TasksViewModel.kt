@@ -1,6 +1,7 @@
 package com.proptit.todohive.ui.home.task
 
 import androidx.lifecycle.*
+import com.proptit.todohive.data.local.entity.TaskEntity
 import com.proptit.todohive.data.local.model.TaskWithCategory
 import com.proptit.todohive.repository.TaskRepository
 import kotlinx.coroutines.flow.*
@@ -37,13 +38,24 @@ class TasksViewModel(private val repo: TaskRepository) : ViewModel() {
 
     val filteredTasks: LiveData<List<TaskWithCategory>> =
         query.asFlow().debounce(50).combine(sourceFlow) { q, list ->
-            val t = q.trim().lowercase()
-            val filtered = if (t.isBlank()) list else list.filter {
+            val other = q.trim().lowercase()
+            val filtered = if (other.isBlank()) list else list.filter {
                 val title = it.task.title.lowercase()
                 val cat   = (it.category?.name ?: "").lowercase()
                 val time  = it.task.even_at.toString().lowercase()
-                title.contains(t) || cat.contains(t) || time.contains(t)
+                title.contains(other) || cat.contains(other) || time.contains(other)
             }
             filtered.sortedBy { item -> item.task.even_at }
         }.asLiveData()
+
+    fun onToggleDone(task: TaskEntity) = viewModelScope.launch {
+        repo.toggleCompleted(task.task_id)
+    }
+
+    fun onSwipeDelete(task: com.proptit.todohive.data.local.entity.TaskEntity) =
+        viewModelScope.launch {
+            repo.delete(task.task_id)
+        }
+
+    fun restore(task: TaskEntity) = viewModelScope.launch { repo.restore(task) }
 }

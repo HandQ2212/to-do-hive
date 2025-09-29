@@ -25,7 +25,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
 
     companion object {
-        @Volatile private var INSTANCE: AppDatabase? = null
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
         fun get(context: Context): AppDatabase =
             INSTANCE ?: synchronized(this) {
                 val db = Room.databaseBuilder(context, AppDatabase::class.java, "todo.db")
@@ -62,44 +63,66 @@ suspend fun seedIfEmpty(db: AppDatabase) {
             UserEntity(username = "demo", password_hash = "hash", email = "demo@ex.com")
         )
 
-        val universityId = catDao.upsert(CategoryEntity(name = "University", color_hex = "#6C63FF"))
-        val homeId       = catDao.upsert(CategoryEntity(name = "Home",       color_hex = "#EF5350"))
-        val workId       = catDao.upsert(CategoryEntity(name = "Work",       color_hex = "#FBC02D"))
+        fun hex(s: String) = s
+        val homeId = catDao.upsert(
+            CategoryEntity(
+                name = "Home",
+                color_hex = hex("#EF5350"),
+                icon = "@drawable/ic_home"
+            )
+        )
+        val workId = catDao.upsert(
+            CategoryEntity(
+                name = "Work",
+                color_hex = hex("#FBC02D"),
+                icon = "@drawable/ic_flag"
+            )
+        )
+        val sportId = catDao.upsert(
+            CategoryEntity(
+                name = "Sport",
+                color_hex = hex("#76FF03"),
+                icon = "@drawable/ic_flag"
+            )
+        )
+        val universityId =
+            catDao.upsert(CategoryEntity(name = "University", color_hex = hex("#6C63FF")))
+        val designId = catDao.upsert(CategoryEntity(name = "Design", color_hex = hex("#64FFDA")))
+        val socialId = catDao.upsert(CategoryEntity(name = "Social", color_hex = hex("#FF80AB")))
+        val musicId = catDao.upsert(CategoryEntity(name = "Music", color_hex = hex("#E040FB")))
+        val healthId = catDao.upsert(CategoryEntity(name = "Health", color_hex = hex("#69F0AE")))
+        val movieId = catDao.upsert(CategoryEntity(name = "Movie", color_hex = hex("#82B1FF")))
+        val groceryId = catDao.upsert(CategoryEntity(name = "Grocery", color_hex = hex("#B2FF59")))
 
-        taskDao.upsert(TaskEntity(title="Do Math Homework", even_at=instantAt(0,16,45),
-            priority=1, user_id=meId, category_id=universityId, is_completed=false))
-        taskDao.upsert(TaskEntity(title="Tack out dogs", even_at=instantAt(0,18,20),
-            priority=2, user_id=meId, category_id=homeId, is_completed=false))
-        taskDao.upsert(TaskEntity(title="Business meeting with CEO", even_at=instantAt(0,8,15),
-            priority=3, user_id=meId, category_id=workId, is_completed=false))
-        taskDao.upsert(TaskEntity(title="Buy Grocery", even_at=instantAt(-1,16,45),
-            priority=2, user_id=meId, category_id=homeId, is_completed=true))
-        taskDao.upsert(TaskEntity(title="Prepare Slide Deck", even_at=instantAt(+1,9,30),
-            priority=1, user_id=meId, category_id=workId, is_completed=false))
-        taskDao.upsert(TaskEntity(title="a Slide Deck", even_at=instantAt(+1,9,29),
-            priority=1, user_id=meId, category_id=workId, is_completed=false))
-        taskDao.upsert(TaskEntity(title="b Slide Deck", even_at=instantAt(+1,9,28),
-            priority=1, user_id=meId, category_id=workId, is_completed=false))
-        taskDao.upsert(TaskEntity(title="c Slide Deck", even_at=instantAt(+1,9,27),
-            priority=1, user_id=meId, category_id=workId, is_completed=false))
-        taskDao.upsert(TaskEntity(title="d Slide Deck", even_at=instantAt(+1,9,26),
-            priority=1, user_id=meId, category_id=workId, is_completed=false))
-        taskDao.upsert(TaskEntity(title="e Slide Deck", even_at=instantAt(+1,9,25),
-            priority=1, user_id=meId, category_id=workId, is_completed=false))
-        taskDao.upsert(TaskEntity(title="f Slide Deck", even_at=instantAt(+1,9,24),
-            priority=1, user_id=meId, category_id=workId, is_completed=false))
-        taskDao.upsert(TaskEntity(title="g Slide Deck", even_at=instantAt(+1,9,23),
-            priority=1, user_id=meId, category_id=workId, is_completed=false))
-        taskDao.upsert(TaskEntity(title="h Slide Deck", even_at=instantAt(+1,9,33),
-            priority=1, user_id=meId, category_id=workId, is_completed=false))
-        taskDao.upsert(TaskEntity(title="i Slide Deck", even_at=instantAt(+1,9,22),
-            priority=1, user_id=meId, category_id=workId, is_completed=false))
-        taskDao.upsert(TaskEntity(title="k Slide Deck", even_at=instantAt(+1,9,21),
-            priority=1, user_id=meId, category_id=workId, is_completed=false))
-        taskDao.upsert(TaskEntity(title="l Slide Deck", even_at=instantAt(+1,9,20),
-            priority=1, user_id=meId, category_id=workId, is_completed=false))
-
-        taskDao.upsert(TaskEntity(title="aewr Slide Deck", even_at=instantAt(+1,9,19),
-            priority=1, user_id=meId, category_id=workId, is_completed=false))
+        taskDao.upsert(
+            TaskEntity(
+                title = "Do Math Homework", even_at = instantAt(0, 16, 45),
+                priority = 1, user_id = meId, category_id = universityId, is_completed = false
+            )
+        )
+        taskDao.upsert(
+            TaskEntity(
+                title = "Tack out dogs", even_at = instantAt(0, 18, 20),
+                priority = 2, user_id = meId, category_id = homeId, is_completed = false
+            )
+        )
+        taskDao.upsert(
+            TaskEntity(
+                title = "Business meeting with CEO", even_at = instantAt(0, 8, 15),
+                priority = 3, user_id = meId, category_id = workId, is_completed = false
+            )
+        )
+        taskDao.upsert(
+            TaskEntity(
+                title = "Buy Grocery", even_at = instantAt(-1, 16, 45),
+                priority = 2, user_id = meId, category_id = homeId, is_completed = true
+            )
+        )
+        taskDao.upsert(
+            TaskEntity(
+                title = "Prepare Slide Deck", even_at = instantAt(+1, 9, 30),
+                priority = 1, user_id = meId, category_id = workId, is_completed = false
+            )
+        )
     }
 }

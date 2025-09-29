@@ -5,35 +5,48 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.proptit.todohive.data.local.entity.TaskEntity
 import com.proptit.todohive.data.local.model.TaskWithCategory
 import com.proptit.todohive.databinding.ItemTaskBinding
 
-class TaskAdapter : ListAdapter<TaskWithCategory, TaskAdapter.TaskViewHolder>(DIFF) {
+class TaskAdapter(
+    private val onToggleDone: (TaskEntity) -> Unit
+) : ListAdapter<TaskWithCategory, TaskAdapter.TaskViewHolder>(DIFF) {
     companion object {
         private val DIFF = object : DiffUtil.ItemCallback<TaskWithCategory>() {
-            override fun areItemsTheSame(o: TaskWithCategory, n: TaskWithCategory) =
-                o.task.task_id == n.task.task_id
-            override fun areContentsTheSame(o: TaskWithCategory, n: TaskWithCategory) = o == n
+            override fun areItemsTheSame(old: TaskWithCategory, new: TaskWithCategory) =
+                old.task.task_id == new.task.task_id
+            override fun areContentsTheSame(old: TaskWithCategory, new: TaskWithCategory) =
+                old == new
         }
     }
     inner class TaskViewHolder(private val binding: ItemTaskBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: TaskWithCategory) {
-            binding.taskTitle = item.task.title
-            binding.taskTime  = formatTime(item.task.even_at)
-            binding.categoryName = item.category?.name ?: "None"
-            binding.priorityText = "P ${item.task.priority}"
-            binding.subCountText = " ${0} "
+
+        fun bind(item: TaskWithCategory) = with(binding) {
+            task = item.task
+            taskTitle    = item.task.title
+            taskTime     = formatTime(item.task.even_at)
+            category     = item.category
+            priorityText = "P"+ item.task.priority.toString()
+            subCountText = "0"
+            onToggleDone = this@TaskAdapter.onToggleDone
+            tvTitle.isSelected = true
+            executePendingBindings()
         }
-        private fun formatTime(instant: java.time.Instant): String =
-            java.time.ZonedDateTime.ofInstant(instant, java.time.ZoneId.systemDefault())
-                .toLocalTime().toString().substring(0,5)
+
+        private fun formatTime(instant: java.time.Instant): String {
+            val zone = java.time.ZoneId.systemDefault()
+            return java.time.format.DateTimeFormatter.ofPattern("HH:mm")
+                .format(instant.atZone(zone))
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-        val inf = LayoutInflater.from(parent.context)
-        val b = ItemTaskBinding.inflate(inf, parent, false)
-        return TaskViewHolder(b)
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = ItemTaskBinding.inflate(inflater, parent, false)
+        return TaskViewHolder(binding)
     }
-    override fun onBindViewHolder(h: TaskViewHolder, pos: Int) = h.bind(getItem(pos))
+    override fun onBindViewHolder(viewHolder: TaskViewHolder, position: Int) =
+        viewHolder.bind(getItem(position))
 }

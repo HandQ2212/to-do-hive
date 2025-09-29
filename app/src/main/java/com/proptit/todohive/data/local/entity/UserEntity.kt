@@ -14,10 +14,22 @@ import java.time.Instant
     ]
 )
 data class UserEntity(
-    @PrimaryKey(autoGenerate = true) val user_id: Long = 0,
-    @ColumnInfo(collate = ColumnInfo.Companion.NOCASE) val username: String,
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "user_id")
+    val user_id: Long = 0,
+
+    @ColumnInfo(name = "username", collate = ColumnInfo.Companion.NOCASE)
+    val username: String,
+
+    @ColumnInfo(name = "password_hash")
     val password_hash: String,
+
+    @ColumnInfo(name = "email")
     val email: String,
+
+    @ColumnInfo(name = "created_at")
     val created_at: Instant = Instant.now(),
+
+    @ColumnInfo(name = "updated_at")
     val updated_at: Instant = Instant.now()
 )

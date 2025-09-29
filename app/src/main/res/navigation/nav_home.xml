@@ -22,40 +22,7 @@
         android:name="com.proptit.todohive.ui.home.EmptyFragment"
         android:label="fragment_empty"
         tools:layout="@layout/fragment_empty" />
-    <fragment
-        android:id="@+id/addTaskFragment"
-        android:name="com.proptit.todohive.ui.home.AddTaskFragment"
-        android:label="fragment_add_task"
-        tools:layout="@layout/fragment_add_task" >
-        <action
-            android:id="@+id/action_addTaskFragment_to_taskAlarmFragment2"
-            app:destination="@id/taskAlarmFragment2" />
-        <action
-            android:id="@+id/action_addTaskFragment_to_taskPriorityFragment"
-            app:destination="@id/taskPriorityFragment" />
-        <action
-            android:id="@+id/action_addTaskFragment_to_categoryFragment"
-            app:destination="@id/categoryFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/taskAlarmFragment2"
-        android:name="com.proptit.todohive.ui.home.TaskAlarmFragment"
-        android:label="fragment_task_alarm"
-        tools:layout="@layout/fragment_task_alarm" />
-    <fragment
-        android:id="@+id/taskPriorityFragment"
-        android:name="com.proptit.todohive.ui.home.TaskPriorityFragment"
-        android:label="fragment_task_priority"
-        tools:layout="@layout/fragment_task_priority" />
-    <fragment
-        android:id="@+id/categoryFragment"
-        android:name="com.proptit.todohive.ui.home.CategoryFragment"
-        android:label="fragment_category"
-        tools:layout="@layout/fragment_category" >
-        <action
-            android:id="@+id/action_categoryFragment_to_createCategoriesFragment"
-            app:destination="@id/createCategoriesFragment" />
-    </fragment>
+
     <fragment
         android:id="@+id/createCategoriesFragment"
         android:name="com.proptit.todohive.ui.home.CreateCategoriesFragment"
@@ -66,24 +33,6 @@
         android:name="com.proptit.todohive.ui.home.task.TaskFragment"
         android:label="fragment_task"
         tools:layout="@layout/fragment_task" >
-        <action
-            android:id="@+id/action_taskFragment_to_editTaskTitleFragment"
-            app:destination="@id/editTaskTitleFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/editTaskTitleFragment"
-        android:name="com.proptit.todohive.ui.home.EditTaskTitleFragment"
-        android:label="fragment_edit_task_title"
-        tools:layout="@layout/fragment_edit_task_title" >
-        <action
-            android:id="@+id/action_editTaskTitleFragment_to_taskAlarmFragment2"
-            app:destination="@id/taskAlarmFragment2" />
-        <action
-            android:id="@+id/action_editTaskTitleFragment_to_taskPriorityFragment"
-            app:destination="@id/taskPriorityFragment" />
-        <action
-            android:id="@+id/action_editTaskTitleFragment_to_categoryFragment"
-            app:destination="@id/categoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/calendarFragment"

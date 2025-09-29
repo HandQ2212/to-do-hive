@@ -22,12 +22,28 @@ import java.time.Instant
     indices = [Index("user_id"), Index("category_id")]
 )
 data class TaskEntity(
-    @PrimaryKey(autoGenerate = true) val task_id: Long = 0,
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "task_id")
+    val task_id: Long = 0,
+
+    @ColumnInfo(name = "title")
     val title: String,
+
+    @ColumnInfo(name = "description")
     val description: String? = null,
+
+    @ColumnInfo(name = "even_at")
     val even_at: Instant,
+
+    @ColumnInfo(name = "priority")
     val priority: Int = 2,
-    @ColumnInfo(defaultValue = "0") val is_completed: Boolean = false,
+
+    @ColumnInfo(name = "is_completed", defaultValue = "0")
+    val is_completed: Boolean = false,
+
+    @ColumnInfo(name = "user_id")
     val user_id: Long,
+
+    @ColumnInfo(name = "category_id")
     val category_id: Long? = null
 )

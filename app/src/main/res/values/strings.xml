@@ -3,4 +3,12 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_task">add task</string>
+    <string name="choose_category">Choose Category</string>
+    <string name="category_default">Category</string>
+    <string name="cd_checkbox">Toggle done</string>
+    <string name="cd_priority_flag">Priority</string>
+    <string name="cd_mark_done">Mark as done</string>
+    <string name="cd_mark_undone">Mark as not done</string>
+    <string name="undo">Undo</string>
+    <string name="deleted_fmt">Deleted “%1$s”</string>
 </resources>
