@@ -3,4 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="dark">#121212</color>
+    <color name="bottom_nav_color_selector">#000000</color>
+    <color name="purple">#8687e7</color>"
 </resources>
