@@ -25,6 +25,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setUpWindowInsets()
+
+        binding.btnGoToHome.setOnClickListener {
+            startActivity(Intent(this, HomeActivity::class.java))
+        }
     }
 
     private fun keepSplashFor(splash: SplashScreen, millis: Long) {

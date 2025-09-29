@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/indexFragment"
-        android:name="com.proptit.todohive.ui.home.IndexFragment"
+        android:name="com.proptit.todohive.ui.home.task.IndexFragment"
         android:label="fragment_index"
         tools:layout="@layout/fragment_index" >
         <action
@@ -63,7 +63,7 @@
         tools:layout="@layout/fragment_create_categories" />
     <fragment
         android:id="@+id/taskFragment"
-        android:name="com.proptit.todohive.ui.home.TaskFragment"
+        android:name="com.proptit.todohive.ui.home.task.TaskFragment"
         android:label="fragment_task"
         tools:layout="@layout/fragment_task" >
         <action
