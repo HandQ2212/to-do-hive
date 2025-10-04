@@ -48,56 +48,63 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="12dp"
                 app:dividerColor="#444444" />
- v
-            <!-- Quick picks -->
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupQuick"
+
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:scrollbars="vertical"
-                app:singleLine="true">
+                android:scrollbars="none"
+                android:fillViewport="true">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipToday"
-                    style="@style/Widget.Material3.Chip.Assist"
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupQuick"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/today"
-                    app:chipBackgroundColor="@color/gray"
-                    android:textColor="@android:color/white" />
+                    android:layout_marginTop="12dp"
+                    app:singleLine="true"
+                    app:singleSelection="false"
+                    app:layout_scrollFlags="scroll">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipTomorrow"
-                    style="@style/Widget.Material3.Chip.Assist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/tomorrow"
-                    app:chipBackgroundColor="@color/gray"
-                    android:textColor="@android:color/white" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipToday"
+                        style="@style/Widget.Material3.Chip.Assist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/today"
+                        app:chipBackgroundColor="@color/gray"
+                        android:textColor="@android:color/white" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipNextWeek"
-                    style="@style/Widget.Material3.Chip.Assist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/next_week"
-                    app:chipBackgroundColor="@color/gray"
-                    android:textColor="@android:color/white" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipTomorrow"
+                        style="@style/Widget.Material3.Chip.Assist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tomorrow"
+                        app:chipBackgroundColor="@color/gray"
+                        android:textColor="@android:color/white" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipClear"
-                    style="@style/Widget.Material3.Chip.Assist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/clear"
-                    app:chipBackgroundColor="@color/gray"
-                    android:textColor="@android:color/white"
-                    app:chipIcon="@drawable/ic_close_small"
-                    app:iconTint="@android:color/white" />
-            </com.google.android.material.chip.ChipGroup>
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipNextWeek"
+                        style="@style/Widget.Material3.Chip.Assist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/next_week"
+                        app:chipBackgroundColor="@color/gray"
+                        android:textColor="@android:color/white" />
 
-            <!-- Pickers row (giữ nguyên phần này của bạn) -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipClear"
+                        style="@style/Widget.Material3.Chip.Assist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/clear"
+                        app:chipBackgroundColor="@color/gray"
+                        android:textColor="@android:color/white"
+                        app:chipIcon="@drawable/ic_close_small"
+                        app:iconTint="@android:color/white" />
+
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

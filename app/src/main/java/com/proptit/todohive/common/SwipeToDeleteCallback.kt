@@ -19,8 +19,8 @@ class SwipeToDeleteCallback(
     private val deleteIcon: Drawable? =
         ContextCompat.getDrawable(context, R.drawable.ic_delete)
 
-    private val iconW = deleteIcon?.intrinsicWidth ?: 0
-    private val iconH = deleteIcon?.intrinsicHeight ?: 0
+    private val iconWidth = deleteIcon?.intrinsicWidth ?: 0
+    private val iconHeight = deleteIcon?.intrinsicHeight ?: 0
 
     override fun onMove(rv: RecyclerView, viewHolder: RecyclerView.ViewHolder, t: RecyclerView.ViewHolder) = false
 
@@ -38,10 +38,10 @@ class SwipeToDeleteCallback(
             background.draw(canvas)
 
             deleteIcon?.let { icon ->
-                val margin = (item.height - iconH) / 2
+                val margin = (item.height - iconHeight) / 2
                 val top = item.top + margin
-                val bottom = top + iconH
-                val left = item.right - margin - iconW
+                val bottom = top + iconHeight
+                val left = item.right - margin - iconWidth
                 val right = item.right - margin
                 icon.setBounds(left, top, right, bottom)
                 icon.draw(canvas)

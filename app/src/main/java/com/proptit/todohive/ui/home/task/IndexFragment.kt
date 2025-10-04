@@ -28,7 +28,7 @@ class IndexFragment : Fragment() {
     private val UNDO_DURATION = 4000L
 
     private val taskViewModel: TasksViewModel by viewModels {
-        TasksViewModelFactory(requireContext().applicationContext)
+        TasksViewModel.Factory(requireContext().applicationContext)
     }
 
     private val adapter by lazy { TaskAdapter { task -> taskViewModel.onToggleDone(task) } }
@@ -110,7 +110,6 @@ class IndexFragment : Fragment() {
             lp.setMargins(m, m, m, m)
             view.layoutParams = lp
         }
-
         val textView = view.findViewById<android.widget.TextView>(
             com.google.android.material.R.id.snackbar_text
         )

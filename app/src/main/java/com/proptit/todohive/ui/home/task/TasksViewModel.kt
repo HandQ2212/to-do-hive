@@ -1,6 +1,8 @@
 package com.proptit.todohive.ui.home.task
 
+import android.content.Context
 import androidx.lifecycle.*
+import com.proptit.todohive.data.local.AppDatabase
 import com.proptit.todohive.data.local.entity.TaskEntity
 import com.proptit.todohive.data.local.model.TaskWithCategory
 import com.proptit.todohive.repository.TaskRepository
@@ -52,10 +54,25 @@ class TasksViewModel(private val repo: TaskRepository) : ViewModel() {
         repo.toggleCompleted(task.task_id)
     }
 
-    fun onSwipeDelete(task: com.proptit.todohive.data.local.entity.TaskEntity) =
-        viewModelScope.launch {
-            repo.delete(task.task_id)
-        }
+    fun onSwipeDelete(task: TaskEntity) = viewModelScope.launch {
+        repo.delete(task.task_id)
+    }
 
-    fun restore(task: TaskEntity) = viewModelScope.launch { repo.restore(task) }
+    fun restore(task: TaskEntity) = viewModelScope.launch {
+        repo.restore(task)
+    }
+    companion object {
+        fun Factory(appContext: Context): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    if (modelClass.isAssignableFrom(TasksViewModel::class.java)) {
+                        val db = AppDatabase.get(appContext)
+                        val repo = TaskRepository(db)
+                        return TasksViewModel(repo) as T
+                    }
+                    throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+                }
+            }
+    }
 }
