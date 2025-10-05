@@ -1,60 +1,126 @@
 package com.proptit.todohive.ui.onboarding
 
+import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayoutMediator
 import com.proptit.todohive.R
+import com.proptit.todohive.data.local.model.OnboardingPage
+import com.proptit.todohive.databinding.FragmentOnboardingBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class OnboardingFragment : Fragment() {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [Onboading.newInstance] factory method to
- * create an instance of this fragment.
- */
-class OnboadingFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var _binding: FragmentOnboardingBinding? = null
+    private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private val pages = listOf(
+        OnboardingPage(
+            R.drawable.ill_manage, "Manage your tasks",
+            "You can easily manage all of your daily tasks in ToDoHive for free"
+        ),
+        OnboardingPage(
+            R.drawable.ill_routine, "Create daily routine",
+            "Create your personalized routine to stay productive"
+        ),
+        OnboardingPage(
+            R.drawable.ill_organize, "Organize your tasks",
+            "Group your daily tasks into separate categories"
+        )
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_onboading, container, false)
+    ): View {
+        _binding = FragmentOnboardingBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Onboading.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            OnboadingFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setupPager()
+        styleNextButton()
+        initIndicatorsAndTexts()
+        registerPageChangeCallback()
+        setupClickListeners()
+    }
+
+    private fun setupPager() {
+        val adapter = OnboardingAdapter(pages)
+        binding.pager.adapter = adapter
+    }
+
+    private fun styleNextButton() {
+        binding.btnNext.apply {
+            strokeColor = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.white))
+            strokeWidth = 2
+            cornerRadius = 24
+            backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.purple))
+            setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        }
+    }
+
+    private fun initIndicatorsAndTexts() {
+        updateBars(0)
+        updateTexts(0)
+    }
+
+    private fun registerPageChangeCallback() {
+        binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                updateBars(position)
+                updateTexts(position)
+                binding.btnNext.text = if (position == pages.lastIndex) "GET STARTED" else "NEXT"
+                binding.btnBack.alpha = if (position == 0) 0.5f else 1f
             }
+        })
+    }
+
+    private fun setupClickListeners() {
+        binding.btnNext.setOnClickListener {
+            if (binding.pager.currentItem < pages.lastIndex) {
+                binding.pager.currentItem += 1
+            } else {
+                finishOnboarding()
+            }
+        }
+        binding.btnSkipTop.setOnClickListener { finishOnboarding() }
+        binding.btnBack.setOnClickListener {
+            if (binding.pager.currentItem > 0) binding.pager.currentItem -= 1
+        }
+    }
+
+    private fun updateTexts(position: Int) {
+        val page = pages[position]
+        binding.textTitle.text = page.title
+        binding.textDescription.text = page.description
+    }
+
+    private fun updateBars(activeIndex: Int) {
+        val active = ContextCompat.getDrawable(requireContext(), R.drawable.indicator_bar_active)
+        val inactive = ContextCompat.getDrawable(requireContext(), R.drawable.indicator_bar_inactive)
+        listOf(binding.bar1, binding.bar2, binding.bar3)
+            .forEachIndexed { i, v -> v.background = if (i == activeIndex) active else inactive }
+    }
+
+    private fun finishOnboarding() {
+        requireContext().getSharedPreferences("app", Context.MODE_PRIVATE)
+            .edit().putBoolean("onboarding_done", true).apply()
+
+        findNavController().navigate(
+            R.id.action_onboarding_to_start,
+            null
+        )
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

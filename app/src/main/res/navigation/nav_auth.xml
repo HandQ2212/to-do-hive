@@ -13,5 +13,9 @@
 
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.proptit.todohive.ui.auth.RegisterFragment"/>
+        android:name="com.proptit.todohive.ui.auth.RegisterFragment">
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
 </navigation>
