@@ -1,60 +1,154 @@
 package com.proptit.todohive.ui.auth
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.proptit.todohive.R
+import com.proptit.todohive.data.local.AppDatabase
+import com.proptit.todohive.data.local.entity.UserEntity
+import com.proptit.todohive.databinding.FragmentRegisterBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.security.MessageDigest
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [RegisterFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class RegisterFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentRegisterBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_register, container, false)
+    ): View {
+        _binding = FragmentRegisterBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment RegisterFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            RegisterFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        applyInsets()
+        setupToolbar()
+        setupButtons()
+    }
+
+    private fun applyInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            insets
+        }
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
+    }
+
+    private fun setupButtons() {
+        binding.btnRegister.setOnClickListener { attemptRegister() }
+        binding.tvLogin.setOnClickListener { findNavController().navigateUp() }
+    }
+
+    private fun attemptRegister() {
+        val username = binding.edtUsername.text?.toString()?.trim().orEmpty()
+        val password = binding.edtPassword.text?.toString().orEmpty()
+        val confirm = binding.edtConfirm.text?.toString().orEmpty()
+
+        clearErrors()
+
+        if (!validateInputs(username, password, confirm)) return
+
+        lifecycleScope.launch { registerUser(username, password) }
+    }
+
+    private fun clearErrors() {
+        binding.tilUsername.error = null
+        binding.tilPassword.error = null
+        binding.tilConfirm.error = null
+    }
+
+    private fun validateInputs(username: String, password: String, confirm: String): Boolean {
+        if (username.isEmpty()) {
+            binding.tilUsername.error = "Please enter username"
+            return false
+        }
+        if (!isStrongPassword(password)) {
+            binding.tilPassword.error = "Min 8 chars, include lowercase, uppercase and special character"
+            return false
+        }
+        if (password != confirm) {
+            binding.tilConfirm.error = "Passwords do not match"
+            return false
+        }
+        return true
+    }
+
+    private suspend fun registerUser(username: String, password: String) {
+        val dao = AppDatabase.get(requireContext()).userDao()
+        val exists = withContext(Dispatchers.IO) { dao.existsByUsername(username) }
+
+        if (exists) {
+            binding.tilUsername.error = "Username is already taken"
+            return
+        }
+
+        val hashed = hashPassword(password)
+        val user = UserEntity(
+            username = username,
+            password_hash = hashed,
+            email = "$username@local"
+        )
+
+        val insertedOk = withContext(Dispatchers.IO) {
+            try {
+                dao.insert(user)
+                true
+            } catch (t: Throwable) {
+                false
             }
+        }
+
+        if (insertedOk) {
+            onRegisterSuccess(username, password)
+        } else {
+            Toast.makeText(requireContext(), "Failed to register", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun onRegisterSuccess(username: String, password: String) {
+        Toast.makeText(requireContext(), "Registered successfully", Toast.LENGTH_SHORT).show()
+        val options = androidx.navigation.NavOptions.Builder()
+            .setPopUpTo(R.id.registerFragment, true)
+            .build()
+        val args = bundleOf(
+            "prefill_username" to username,
+            "prefill_password" to password
+        )
+        findNavController().navigate(R.id.loginFragment, args, options)
+    }
+
+    private fun isStrongPassword(pw: String): Boolean {
+        val regex = Regex(
+            """^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#\$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{8,}$"""
+        )
+        return regex.containsMatchIn(pw)
+    }
+
+    private fun hashPassword(password: String): String {
+        val bytes = MessageDigest.getInstance("SHA-256").digest(password.toByteArray(Charsets.UTF_8))
+        return bytes.joinToString("") { "%02x".format(it) }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

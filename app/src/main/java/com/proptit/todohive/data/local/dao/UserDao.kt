@@ -19,4 +19,10 @@ interface UserDao {
 
     @Query("SELECT user_id FROM users WHERE email = :email LIMIT 1")
     suspend fun getIdByEmail(email: String): Long?
+
+    @Query("SELECT * FROM users WHERE username = :username LIMIT 1")
+    suspend fun findByUsername(username: String): UserEntity?
+
+    @Query("SELECT EXISTS(SELECT 1 FROM users WHERE username = :username)")
+    suspend fun existsByUsername(username: String): Boolean
 }

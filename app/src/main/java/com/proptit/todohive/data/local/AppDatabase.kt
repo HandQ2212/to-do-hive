@@ -8,6 +8,7 @@ import com.proptit.todohive.data.local.dao.CategoryDao
 import com.proptit.todohive.data.local.dao.TaskDao
 import com.proptit.todohive.data.local.dao.UserDao
 import com.proptit.todohive.data.local.entity.*
+import java.security.MessageDigest
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -15,7 +16,7 @@ import java.time.ZoneId
 
 @Database(
     entities = [UserEntity::class, CategoryEntity::class, TaskEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @TypeConverters(InstantConverters::class)
@@ -60,7 +61,7 @@ suspend fun seedIfEmpty(db: AppDatabase) {
     db.withTransaction {
         val existing = userDao.getByEmail("demo@ex.com")
         val meId = existing?.user_id ?: userDao.insert(
-            UserEntity(username = "demo", password_hash = "hash", email = "demo@ex.com")
+            UserEntity(username = "demo", password_hash = hashPassword("hash"), email = "demo@ex.com")
         )
 
         fun hex(s: String) = s
@@ -125,4 +126,9 @@ suspend fun seedIfEmpty(db: AppDatabase) {
             )
         )
     }
+}
+
+private fun hashPassword(password: String): String {
+    val bytes = MessageDigest.getInstance("SHA-256").digest(password.toByteArray())
+    return bytes.joinToString("") { "%02x".format(it) }
 }
