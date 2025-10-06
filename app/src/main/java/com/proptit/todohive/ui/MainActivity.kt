@@ -11,14 +11,18 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import com.proptit.todohive.R
+import com.proptit.todohive.data.local.AppDatabase
 import com.proptit.todohive.databinding.ActivityMainBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splash = installSplashScreen()
+        val splash: SplashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
         keepSplashFor(splash, 500L)
@@ -27,11 +31,21 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setUpWindowInsets()
 
-        lifecycleScope.launch {
-            val didAuto = tryAutoLogin()
-            if (!didAuto) {
-                setupStartGraph()
-            }
+        lifecycleScope.launchWhenCreated {
+            val didAutoLogin = tryAutoLogin()
+            if (!didAutoLogin) setupStartGraph()
+        }
+
+        handleDeepNav(intent)
+    }
+
+    private fun handleDeepNav(intent: Intent?) {
+        val target = intent?.getStringExtra("nav_target") ?: return
+        val navHost = supportFragmentManager.findFragmentById(R.id.nav_auth) as NavHostFragment
+        val navController = navHost.navController
+        when (target) {
+            "register" -> navController.navigate(R.id.registerFragment)
+            "login" -> navController.navigate(R.id.loginFragment)
         }
     }
 
@@ -72,19 +86,17 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun tryAutoLogin(): Boolean {
         val prefs = getSharedPreferences("app", MODE_PRIVATE)
-        val remember = prefs.getBoolean("remember_me", false)
-        if (!remember) return false
+        val rememberMe = prefs.getBoolean("remember_me", false)
+        if (!rememberMe) return false
 
         val username = prefs.getString("remember_username", null) ?: return false
         val savedHash = prefs.getString("remember_hash", null) ?: return false
 
-        val dao = com.proptit.todohive.data.local.AppDatabase.get(this).userDao()
-        val user = with(kotlinx.coroutines.Dispatchers.IO) {
-            kotlinx.coroutines.withContext(this) { dao.findByUsername(username) }
-        } ?: return false
+        val dao = AppDatabase.get(this).userDao()
+        val user = withContext(Dispatchers.IO) { dao.findByUsername(username) } ?: return false
 
         return if (user.password_hash == savedHash) {
-            startActivity(android.content.Intent(this, com.proptit.todohive.ui.HomeActivity::class.java))
+            startActivity(Intent(this, HomeActivity::class.java))
             finish()
             true
         } else {
@@ -96,5 +108,10 @@ class MainActivity : AppCompatActivity() {
                 .apply()
             false
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleDeepNav(intent)
     }
 }

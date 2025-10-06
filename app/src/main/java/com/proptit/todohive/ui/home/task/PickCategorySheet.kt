@@ -1,10 +1,13 @@
 package com.proptit.todohive.ui.home.task
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -14,7 +17,6 @@ import com.proptit.todohive.R
 import com.proptit.todohive.common.SpacesItemDecoration
 import com.proptit.todohive.data.local.entity.CategoryEntity
 import com.proptit.todohive.databinding.BottomsheetPickCategoryBinding
-import com.proptit.todohive.ui.home.CreateCategoriesFragment
 import com.proptit.todohive.ui.home.TaskFragment
 import com.proptit.todohive.ui.home.task.add.AddTaskSheetViewModel
 
@@ -24,13 +26,26 @@ class PickCategorySheet : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
 
     private val categoryViewModel: CategoryViewModel by viewModels()
-
     private val addTaskViewModel: AddTaskSheetViewModel by activityViewModels()
 
-    private val adapter by lazy {
-        CategoryAdapter { cat: CategoryEntity ->
-            addTaskViewModel.setPickedCategoryId(cat.category_id)
-            onCategoryPicked(cat.category_id, cat.name)
+    private val categoryAdapter by lazy {
+        CategoryAdapter { category: CategoryEntity ->
+            addTaskViewModel.setPickedCategoryId(category.category_id)
+            onCategoryPicked(category.category_id, category.name)
+        }
+    }
+
+    private val createCategoryLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            val newId = data?.getLongExtra(CreateCategoryActivity.EXTRA_CATEGORY_ID, -1L) ?: -1L
+            val newName = data?.getStringExtra(CreateCategoryActivity.EXTRA_CATEGORY_NAME) ?: ""
+            if (newId > 0L) {
+                addTaskViewModel.setPickedCategoryId(newId)
+                onCategoryPicked(newId, newName)
+            }
         }
     }
 
@@ -62,8 +77,7 @@ class PickCategorySheet : BottomSheetDialogFragment() {
         tvTitle.text = getString(R.string.choose_category)
         val span = 3
         rvCategories.layoutManager = GridLayoutManager(requireContext(), span)
-        rvCategories.adapter = adapter
-
+        rvCategories.adapter = categoryAdapter
         val space = resources.getDimensionPixelSize(R.dimen.grid_space_8)
         if (rvCategories.itemDecorationCount == 0) {
             rvCategories.addItemDecoration(SpacesItemDecoration(space, space))
@@ -72,14 +86,14 @@ class PickCategorySheet : BottomSheetDialogFragment() {
 
     private fun observeCategories() {
         categoryViewModel.filtered.observe(viewLifecycleOwner) { list ->
-            adapter.submitList(list)
+            categoryAdapter.submitList(list)
         }
     }
 
-    private fun setupActions() = with(binding) {
-        btnAddCategory.setOnClickListener {
-            startActivity(Intent(requireContext(), CreateCategoriesFragment::class.java))
-            dismiss()
+    private fun setupActions() {
+        binding.btnAddCategory.setOnClickListener {
+            val intent = CreateCategoryActivity.createIntent(requireContext())
+            createCategoryLauncher.launch(intent)
         }
     }
 
