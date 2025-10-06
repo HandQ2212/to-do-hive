@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -14,6 +15,7 @@ import com.proptit.todohive.common.SpacesItemDecoration
 import com.proptit.todohive.data.local.entity.CategoryEntity
 import com.proptit.todohive.databinding.BottomsheetPickCategoryBinding
 import com.proptit.todohive.ui.home.CreateCategoriesFragment
+import com.proptit.todohive.ui.home.TaskFragment
 import com.proptit.todohive.ui.home.task.add.AddTaskSheetViewModel
 
 class PickCategorySheet : BottomSheetDialogFragment() {
@@ -28,8 +30,19 @@ class PickCategorySheet : BottomSheetDialogFragment() {
     private val adapter by lazy {
         CategoryAdapter { cat: CategoryEntity ->
             addTaskViewModel.setPickedCategoryId(cat.category_id)
-            dismiss()
+            onCategoryPicked(cat.category_id, cat.name)
         }
+    }
+
+    private fun onCategoryPicked(id: Long?, name: String?) {
+        parentFragmentManager.setFragmentResult(
+            TaskFragment.REQ_CATEGORY,
+            bundleOf(
+                TaskFragment.RES_CATEGORY_ID to (id ?: -1L),
+                TaskFragment.RES_CATEGORY_NAME to (name ?: "")
+            )
+        )
+        dismiss()
     }
 
     override fun onCreateView(

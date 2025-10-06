@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -35,9 +36,13 @@ class LogInFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val isInOnboarding = runCatching {
+            findNavController().graph.id == R.id.nav_onboarding
+        }.getOrDefault(false)
+        binding.toolbar.isVisible = isInOnboarding
         prefillData()
         applyInsets()
-        setupToolbar()
+        if (isInOnboarding) setupToolbar()
         setupLoginButton()
         setupRegisterLink()
     }
@@ -47,11 +52,9 @@ class LogInFragment : Fragment() {
         val p = arguments?.getString("prefill_password").orEmpty()
         if (u.isNotEmpty()) binding.edtUsername.setText(u)
         if (p.isNotEmpty()) binding.edtPassword.setText(p)
-
         val prefs = requireContext().getSharedPreferences("app", android.content.Context.MODE_PRIVATE)
         val remembered = prefs.getBoolean("remember_me", false)
         val rememberedUsername = prefs.getString("remember_username", "") ?: ""
-
         if (u.isEmpty() && rememberedUsername.isNotEmpty()) {
             binding.edtUsername.setText(rememberedUsername)
         }
@@ -96,13 +99,11 @@ class LogInFragment : Fragment() {
     private suspend fun checkLogin(username: String, password: String) {
         val dao = AppDatabase.get(requireContext()).userDao()
         val inputHash = hashPassword(password.trim())
-
         val user = withContext(Dispatchers.IO) { dao.findByUsername(username.trim()) }
         if (user == null) {
             Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show()
             return
         }
-
         if (user.password_hash == inputHash) {
             val prefs = requireContext().getSharedPreferences("app", android.content.Context.MODE_PRIVATE)
             if (binding.cbRemember.isChecked) {
@@ -120,7 +121,6 @@ class LogInFragment : Fragment() {
                     .remove("remember_hash")
                     .apply()
             }
-
             withContext(Dispatchers.Main) {
                 Toast.makeText(requireContext(), "Welcome, ${user.username}", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(requireContext(), HomeActivity::class.java))

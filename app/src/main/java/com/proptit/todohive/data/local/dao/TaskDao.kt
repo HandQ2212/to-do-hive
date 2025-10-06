@@ -69,4 +69,12 @@ interface TaskDao {
 
     @androidx.room.Query("UPDATE tasks SET is_completed = NOT is_completed WHERE task_id = :taskId")
     suspend fun toggleCompleted(taskId: Long)
+
+    @Transaction
+    @Query("SELECT * FROM tasks WHERE task_id = :id LIMIT 1")
+    fun observeTaskWithCategory(id: Long): Flow<TaskWithCategory?>
+
+    @Transaction
+    @Query("SELECT * FROM tasks WHERE task_id = :id LIMIT 1")
+    suspend fun getTaskWithCategoryById(id: Long): TaskWithCategory?
 }

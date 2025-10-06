@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -35,8 +36,12 @@ class RegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val isInOnboarding = runCatching {
+            findNavController().graph.id == R.id.nav_onboarding
+        }.getOrDefault(false)
+        binding.toolbar.isVisible = isInOnboarding
         applyInsets()
-        setupToolbar()
+        if (isInOnboarding) setupToolbar()
         setupButtons()
     }
 
@@ -61,11 +66,8 @@ class RegisterFragment : Fragment() {
         val username = binding.edtUsername.text?.toString()?.trim().orEmpty()
         val password = binding.edtPassword.text?.toString().orEmpty()
         val confirm = binding.edtConfirm.text?.toString().orEmpty()
-
         clearErrors()
-
         if (!validateInputs(username, password, confirm)) return
-
         lifecycleScope.launch { registerUser(username, password) }
     }
 
@@ -94,19 +96,16 @@ class RegisterFragment : Fragment() {
     private suspend fun registerUser(username: String, password: String) {
         val dao = AppDatabase.get(requireContext()).userDao()
         val exists = withContext(Dispatchers.IO) { dao.existsByUsername(username) }
-
         if (exists) {
             binding.tilUsername.error = "Username is already taken"
             return
         }
-
         val hashed = hashPassword(password)
         val user = UserEntity(
             username = username,
             password_hash = hashed,
             email = "$username@local"
         )
-
         val insertedOk = withContext(Dispatchers.IO) {
             try {
                 dao.insert(user)
@@ -115,7 +114,6 @@ class RegisterFragment : Fragment() {
                 false
             }
         }
-
         if (insertedOk) {
             onRegisterSuccess(username, password)
         } else {

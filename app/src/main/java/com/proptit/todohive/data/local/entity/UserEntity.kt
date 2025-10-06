@@ -27,6 +27,9 @@ data class UserEntity(
     @ColumnInfo(name = "email")
     val email: String,
 
+    @ColumnInfo(name = "avatar_url")
+    val avatar_url: String? = null,
+
     @ColumnInfo(name = "created_at")
     val created_at: Instant = Instant.now(),
 

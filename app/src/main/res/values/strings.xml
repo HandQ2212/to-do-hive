@@ -23,4 +23,9 @@
     <string name="clear">Clear</string>
     <string name="date">Date</string>
     <string name="enter_your_username">Enter your username</string>
+    <string name="task_time">Task time</string>
+    <string name="task_category">Task Category</string>
+    <string name="delete_task">Delete task</string>
+    <string name="edit_task">Edit task</string>
+    <string name="error_title_required">Title cannot be empty</string>
 </resources>

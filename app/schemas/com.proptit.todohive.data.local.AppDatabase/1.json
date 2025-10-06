@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "57d6e0230f61f6cf57369081a0c437b0",
+    "identityHash": "e663895bc4958c6579ac34cc507dd7e3",
     "entities": [
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `username` TEXT NOT NULL COLLATE NOCASE, `password_hash` TEXT NOT NULL, `email` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `username` TEXT NOT NULL COLLATE NOCASE, `password_hash` TEXT NOT NULL, `email` TEXT NOT NULL, `avatar_url` TEXT, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "user_id",
@@ -31,6 +31,11 @@
             "columnName": "email",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "avatar_url",
+            "columnName": "avatar_url",
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "created_at",
@@ -70,8 +75,7 @@
             "orders": [],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_users_email` ON `${TABLE_NAME}` (`email`)"
           }
-        ],
-        "foreignKeys": []
+        ]
       },
       {
         "tableName": "categories",
@@ -92,8 +96,7 @@
           {
             "fieldPath": "icon",
             "columnName": "icon",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "color_hex",
@@ -113,9 +116,7 @@
           "columnNames": [
             "category_id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "tasks",
@@ -136,8 +137,7 @@
           {
             "fieldPath": "description",
             "columnName": "description",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "even_at",
@@ -167,8 +167,7 @@
           {
             "fieldPath": "category_id",
             "columnName": "category_id",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -223,10 +222,9 @@
         ]
       }
     ],
-    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '57d6e0230f61f6cf57369081a0c437b0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e663895bc4958c6579ac34cc507dd7e3')"
     ]
   }
 }
