@@ -18,13 +18,13 @@ class TaskDetailViewModel(private val repo: TaskRepository) : ViewModel() {
     private val _task = MutableLiveData<TaskEntity?>()
     val task: LiveData<TaskEntity?> = _task
 
-    val taskTitle     = MutableLiveData<String>()
-    val taskDesc      = MutableLiveData<String>()
-    val taskTimeText  = MutableLiveData<String>()
-    val categoryText  = MutableLiveData<String>()
-    val priorityText  = MutableLiveData<String>()
-    val isDone        = MutableLiveData<Boolean>()
-    val category      = MutableLiveData<CategoryEntity?>()
+    val taskTitle = MutableLiveData<String>()
+    val taskDesc = MutableLiveData<String>()
+    val taskTimeText = MutableLiveData<String>()
+    val categoryText = MutableLiveData<String>()
+    val priorityText = MutableLiveData<String>()
+    val isDone = MutableLiveData<Boolean>()
+    val category = MutableLiveData<CategoryEntity?>()
 
     private val formatter = DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy")
     private val zone = ZoneId.systemDefault()
@@ -35,13 +35,13 @@ class TaskDetailViewModel(private val repo: TaskRepository) : ViewModel() {
         currentId = taskId
         val t = repo.getById(taskId) ?: return@launch
         _task.value = t
-        taskTitle.value    = t.title
-        taskDesc.value     = t.description ?: ""
+        taskTitle.value = t.title
+        taskDesc.value = t.description ?: ""
         taskTimeText.value = formatter.format(t.even_at.atZone(zone))
         priorityText.value = "P${t.priority}"
-        isDone.value       = t.is_completed
+        isDone.value = t.is_completed
         val cat = withContext(Dispatchers.IO) { repo.getCategoryById(t.category_id) }
-        category.value     = cat
+        category.value = cat
         categoryText.value = cat?.name ?: "Default"
     }
 
@@ -84,7 +84,7 @@ class TaskDetailViewModel(private val repo: TaskRepository) : ViewModel() {
         val t = _task.value ?: return@launch
         _task.value = t.copy(category_id = categoryId)
         val cat = withContext(Dispatchers.IO) { repo.getCategoryById(categoryId) }
-        category.value     = cat
+        category.value = cat
         categoryText.value = categoryName ?: cat?.name ?: "Default"
         repo.update(
             id = t.task_id,
@@ -129,7 +129,7 @@ class TaskDetailViewModel(private val repo: TaskRepository) : ViewModel() {
             description = newDesc
         )
         taskTitle.value = newTitle
-        taskDesc.value  = newDesc
+        taskDesc.value = newDesc
     }
 
     companion object {
@@ -139,7 +139,10 @@ class TaskDetailViewModel(private val repo: TaskRepository) : ViewModel() {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     if (modelClass.isAssignableFrom(TaskDetailViewModel::class.java)) {
                         val db = AppDatabase.get(appContext)
-                        val repo = TaskRepository(db)
+                        val prefs = appContext.getSharedPreferences("app", Context.MODE_PRIVATE)
+                        val currentUserId = prefs.getLong("current_user_id", 0L)
+                        require(currentUserId > 0L) { "No logged-in user." }
+                        val repo = TaskRepository(db, currentUserId)
                         return TaskDetailViewModel(repo) as T
                     }
                     throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

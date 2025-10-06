@@ -1,5 +1,6 @@
 package com.proptit.todohive.data.local.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.proptit.todohive.data.local.entity.UserEntity
 
@@ -8,8 +9,14 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(u: UserEntity): Long
 
-    @Query("SELECT * FROM users WHERE user_id = :id")
+    @Query("SELECT * FROM users WHERE user_id = :id LIMIT 1")
     suspend fun getById(id: Long): UserEntity?
+
+    @Query("SELECT * FROM users WHERE user_id = :id LIMIT 1")
+    fun observeById(id: Long): LiveData<UserEntity?>
+
+    @Query("SELECT * FROM users ORDER BY created_at DESC")
+    fun observeAll(): LiveData<List<UserEntity>>
 
     @Query("SELECT COUNT(*) FROM users")
     suspend fun count(): Int

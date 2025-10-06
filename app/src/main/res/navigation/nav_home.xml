@@ -27,7 +27,7 @@
         android:id="@+id/createCategoriesFragment"
         android:name="com.proptit.todohive.ui.home.CreateCategoriesFragment"
         android:label="fragment_create_categories"
-        tools:layout="@layout/fragment_create_categories" />
+        tools:layout="@layout/activity_create_categories" />
     <fragment
         android:id="@+id/taskFragment"
         android:name="com.proptit.todohive.ui.home.TaskFragment"

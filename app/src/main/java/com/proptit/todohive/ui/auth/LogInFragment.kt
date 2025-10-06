@@ -35,10 +35,10 @@ class LogInFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         val isInOnboarding = runCatching {
             findNavController().graph.id == R.id.nav_onboarding
         }.getOrDefault(false)
+
         binding.toolbar.isVisible = isInOnboarding
         prefillData()
         applyInsets()
@@ -48,16 +48,10 @@ class LogInFragment : Fragment() {
     }
 
     private fun prefillData() {
-        val u = arguments?.getString("prefill_username").orEmpty()
-        val p = arguments?.getString("prefill_password").orEmpty()
-        if (u.isNotEmpty()) binding.edtUsername.setText(u)
-        if (p.isNotEmpty()) binding.edtPassword.setText(p)
         val prefs = requireContext().getSharedPreferences("app", android.content.Context.MODE_PRIVATE)
         val remembered = prefs.getBoolean("remember_me", false)
         val rememberedUsername = prefs.getString("remember_username", "") ?: ""
-        if (u.isEmpty() && rememberedUsername.isNotEmpty()) {
-            binding.edtUsername.setText(rememberedUsername)
-        }
+        binding.edtUsername.setText(rememberedUsername)
         binding.cbRemember.isChecked = remembered
     }
 
@@ -98,29 +92,37 @@ class LogInFragment : Fragment() {
 
     private suspend fun checkLogin(username: String, password: String) {
         val dao = AppDatabase.get(requireContext()).userDao()
-        val inputHash = hashPassword(password.trim())
-        val user = withContext(Dispatchers.IO) { dao.findByUsername(username.trim()) }
+        val inputHash = hashPassword(password)
+        val user = withContext(Dispatchers.IO) { dao.findByUsername(username) }
+
         if (user == null) {
             Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show()
             return
         }
+
         if (user.password_hash == inputHash) {
             val prefs = requireContext().getSharedPreferences("app", android.content.Context.MODE_PRIVATE)
-            if (binding.cbRemember.isChecked) {
+            val wantRemember = binding.cbRemember.isChecked
+
+            prefs.edit()
+                .putLong("current_user_id", user.user_id)
+                .putBoolean("remember_me", wantRemember)
+                .apply()
+
+            if (wantRemember) {
                 prefs.edit()
-                    .putBoolean("remember_me", true)
                     .putLong("remember_user_id", user.user_id)
                     .putString("remember_username", user.username)
                     .putString("remember_hash", user.password_hash)
                     .apply()
             } else {
                 prefs.edit()
-                    .remove("remember_me")
                     .remove("remember_user_id")
                     .remove("remember_username")
                     .remove("remember_hash")
                     .apply()
             }
+
             withContext(Dispatchers.Main) {
                 Toast.makeText(requireContext(), "Welcome, ${user.username}", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(requireContext(), HomeActivity::class.java))
@@ -137,7 +139,7 @@ class LogInFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 }

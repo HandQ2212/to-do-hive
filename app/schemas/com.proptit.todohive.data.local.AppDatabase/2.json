@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "e663895bc4958c6579ac34cc507dd7e3",
+    "identityHash": "39609b19b2d3ce1ac0652fb4681264b1",
     "entities": [
       {
         "tableName": "users",
@@ -79,13 +79,18 @@
       },
       {
         "tableName": "categories",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`category_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `icon` TEXT, `color_hex` TEXT NOT NULL, `created_at` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`category_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `owner_user_id` INTEGER, `name` TEXT NOT NULL, `icon` TEXT, `color_hex` TEXT NOT NULL, `created_at` INTEGER NOT NULL, FOREIGN KEY(`owner_user_id`) REFERENCES `users`(`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "category_id",
             "columnName": "category_id",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "owner_user_id",
+            "columnName": "owner_user_id",
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "name",
@@ -116,7 +121,41 @@
           "columnNames": [
             "category_id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_categories_name_owner_user_id",
+            "unique": true,
+            "columnNames": [
+              "name",
+              "owner_user_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_categories_name_owner_user_id` ON `${TABLE_NAME}` (`name`, `owner_user_id`)"
+          },
+          {
+            "name": "index_categories_owner_user_id",
+            "unique": false,
+            "columnNames": [
+              "owner_user_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_categories_owner_user_id` ON `${TABLE_NAME}` (`owner_user_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "users",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "owner_user_id"
+            ],
+            "referencedColumns": [
+              "user_id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "tasks",
@@ -224,7 +263,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e663895bc4958c6579ac34cc507dd7e3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '39609b19b2d3ce1ac0652fb4681264b1')"
     ]
   }
 }
