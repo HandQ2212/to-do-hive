@@ -19,9 +19,9 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         initBinding()
-        setUpWindowInsets()
         setupNavigation()
         setupFabAdd()
+        setUpWindowInsets()
     }
 
     private fun initBinding() {
@@ -33,7 +33,11 @@ class HomeActivity : AppCompatActivity() {
         val navHost = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHost.navController
-        binding.bottomNav.setupWithNavController(navController)
+        binding.bottomNavigationView.setupWithNavController(navController)
+
+        if (binding.bottomNavigationView.menu.size() >= 3) {
+            binding.bottomNavigationView.menu.getItem(2).isEnabled = false
+        }
     }
 
     private fun setupFabAdd() {
@@ -45,12 +49,7 @@ class HomeActivity : AppCompatActivity() {
     private fun setUpWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(sys.left, sys.top, sys.right, 0)
-            insets
-        }
-        ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNav) { v, insets ->
-            val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, sys.bottom)
+            view.setPadding(sys.left, sys.top, sys.right, -16)
             insets
         }
     }

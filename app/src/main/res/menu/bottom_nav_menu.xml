@@ -8,6 +8,14 @@
         android:id="@id/calendarFragment"
         android:title="Calendar"
         android:icon="@drawable/ic_calendar" />
+
+    <item
+        android:id="@+id/nav_spacer"
+        android:enabled="false"
+        android:checkable="false"
+        android:icon="@drawable/ic_transparent_1dp"
+        android:title="" />
+
     <item
         android:id="@+id/focusFragment"
         android:title="Focus"
