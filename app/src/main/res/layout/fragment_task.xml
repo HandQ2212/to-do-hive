@@ -1,14 +1,285 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.home.task.TaskFragment">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <data>
+        <variable name="onBack"         type="kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt;"/>
+        <variable name="onShare"        type="kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt;"/>
+        <variable name="onToggleDone"   type="kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt;"/>
+        <variable name="onEditTitle"    type="kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt;"/>
+        <variable name="onPickTime"     type="kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt;"/>
+        <variable name="onPickCategory" type="kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt;"/>
+        <variable name="onPickPriority" type="kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt;"/>
+        <variable name="onDelete"       type="kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt;"/>
+        <variable name="onEditTask"     type="kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt;"/>
+
+        <variable name="taskTitle"      type="String"/>
+        <variable name="taskDesc"       type="String"/>
+        <variable name="taskTimeText"   type="String"/>
+        <variable name="categoryText"   type="String"/>
+        <variable name="priorityText"   type="String"/>
+        <variable name="isDone"         type="Boolean"/>
+
+        <variable
+            name="category"
+            type="com.proptit.todohive.data.local.entity.CategoryEntity" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:background="@color/dark">
 
-</FrameLayout>
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_close"
+                    android:onClick='@{(v) -> onBack.invoke()}'
+                    android:contentDescription="back"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/ivCheck"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="24dp"
+                    android:src="@drawable/ic_circle_unchecked"
+                    android:onClick='@{(v) -> onToggleDone.invoke()}'
+                    app:isDone='@{isDone}'
+                    app:tint="#D0D0D0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/btnBack" />
+
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="marquee"
+                    android:singleLine="true"
+                    android:layout_marginStart="16dp"
+                    android:scrollHorizontally="true"
+                    android:fadingEdgeLength="16dp"
+                    android:text='@{taskTitle}'
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/ivCheck"
+                    app:layout_constraintEnd_toStartOf="@id/btnEditTitle"
+                    app:layout_constraintTop_toTopOf="@id/ivCheck" />
+
+                <ImageButton
+                    android:id="@+id/btnEditTitle"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:backgroundTint="#2A2A2A"
+                    android:src="@drawable/ic_edit"
+                    android:onClick='@{(v) -> onEditTitle.invoke()}'
+                    app:tint="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvTitle" />
+
+                <TextView
+                    android:id="@+id/tvDesc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text='@{taskDesc}'
+                    android:textColor="#BDBDBD"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="@id/tvTitle"
+                    app:layout_constraintTop_toBottomOf="@id/tvTitle"
+                    app:layout_constraintEnd_toStartOf="@id/btnEditTitle"/>
+
+                <ImageView
+                    android:id="@+id/icTime"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="48dp"
+                    android:src="@drawable/ic_time"
+                    app:tint="@android:color/white"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvDesc"/>
+
+                <TextView
+                    android:id="@+id/lblTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/task_time"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintStart_toEndOf="@id/icTime"
+                    app:layout_constraintTop_toTopOf="@id/icTime"/>
+
+                <TextView
+                    android:id="@+id/badgeTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_badge_time"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:gravity="center"
+                    android:minWidth="140dp"
+                    android:layout_marginTop="-16dp"
+                    android:onClick='@{(v) -> onPickTime.invoke()}'
+                    android:paddingHorizontal="14dp"
+                    android:text='@{taskTimeText}'
+                    android:textColor="#E0E0E0"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/icTime" />
+
+                <ImageView
+                    android:id="@+id/icCategory"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="48dp"
+                    android:src="@drawable/ic_tag"
+                    app:tint="@android:color/white"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/icTime"/>
+
+                <TextView
+                    android:id="@+id/lblCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/task_category"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintStart_toEndOf="@id/icCategory"
+                    app:layout_constraintTop_toTopOf="@id/icCategory"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/badgeCategory"
+                    style="@style/Widget.Material3.Chip.Assist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:minWidth="0dp"
+                    android:layout_marginTop="-8dp"
+                    android:paddingHorizontal="8dp"
+                    android:onClick='@{(v) -> onPickCategory.invoke()}'
+                    app:bindCategory='@{category}'
+                    app:chipEndPadding="6dp"
+                    app:chipStartPadding="6dp"
+                    app:iconStartPadding="4dp"
+                    app:layout_constraintTop_toTopOf="@id/icCategory"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:rippleColor="@android:color/transparent" />
+
+                <ImageView
+                    android:id="@+id/icPriority"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="48dp"
+                    android:src="@drawable/ic_flag"
+                    app:tint="@android:color/white"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/icCategory"/>
+
+                <TextView
+                    android:id="@+id/lblPriority"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/task_priority"
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp"
+                    app:layout_constraintStart_toEndOf="@id/icPriority"
+                    app:layout_constraintTop_toTopOf="@id/icPriority"/>
+
+                <LinearLayout
+                    android:id="@+id/priorityBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="33dp"
+                    android:background="@drawable/bg_priority_badge"
+                    android:gravity="center_vertical"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:layout_marginTop="-4dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:onClick='@{(v) -> onPickPriority.invoke()}'
+                    app:layout_goneMarginTop="-8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/icPriority">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_flag"
+                        app:tint="#BDBEF5" />
+
+                    <TextView
+                        android:id="@+id/tvPriority"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text='@{priorityText}'
+                        android:textColor="#BDBEF5"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/btnDelete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="48dp"
+                    android:gravity="center_vertical"
+                    android:onClick='@{(v) -> onDelete.invoke()}'
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/icPriority">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_delete"
+                        app:tint="#FF5C5C"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/delete_task"
+                        android:textColor="#FF5C5C"
+                        android:textSize="15sp"/>
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEditTask"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="28dp"
+                    android:layout_marginBottom="8dp"
+                    android:onClick='@{(v) -> onEditTask.invoke()}'
+                    android:text="@string/edit_task"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:backgroundTint="#9B9BF6"
+                    app:cornerRadius="12dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

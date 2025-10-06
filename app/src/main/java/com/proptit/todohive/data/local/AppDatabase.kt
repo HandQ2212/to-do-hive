@@ -16,7 +16,7 @@ import java.time.ZoneId
 
 @Database(
     entities = [UserEntity::class, CategoryEntity::class, TaskEntity::class],
-    version = 2,
+    version = 1,
     exportSchema = true
 )
 @TypeConverters(InstantConverters::class)
@@ -61,7 +61,12 @@ suspend fun seedIfEmpty(db: AppDatabase) {
     db.withTransaction {
         val existing = userDao.getByEmail("demo@ex.com")
         val meId = existing?.user_id ?: userDao.insert(
-            UserEntity(username = "demo", password_hash = hashPassword("hash"), email = "demo@ex.com")
+            UserEntity(
+                username = "demo",
+                password_hash = hashPassword("hash"),
+                email = "demo@ex.com",
+                avatar_url = "https://res.cloudinary.com/da4dr8ghb/image/upload/v1759733914/Unknown_person_pjgtdt.jpg"
+            )
         )
 
         fun hex(s: String) = s

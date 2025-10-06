@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.proptit.todohive.R
 import com.proptit.todohive.common.SpacesItemDecoration
 import com.proptit.todohive.databinding.BottomsheetPickPriorityBinding
+import com.proptit.todohive.ui.home.TaskFragment
 import com.proptit.todohive.ui.home.task.add.AddTaskSheetViewModel
 
 class PickPrioritySheet : BottomSheetDialogFragment() {
@@ -49,6 +51,10 @@ class PickPrioritySheet : BottomSheetDialogFragment() {
         btnCancel.setOnClickListener { dismiss() }
         btnSave.setOnClickListener {
             viewModel.setPickedPriority(tempSelected)
+            parentFragmentManager.setFragmentResult(
+                TaskFragment.REQ_PRIORITY,
+                bundleOf(TaskFragment.RES_PRIORITY to tempSelected)
+            )
             dismiss()
         }
     }

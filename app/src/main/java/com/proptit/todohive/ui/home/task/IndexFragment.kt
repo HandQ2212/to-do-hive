@@ -1,23 +1,35 @@
 package com.proptit.todohive.ui.home.task
 
 import android.animation.ValueAnimator
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.snackbar.Snackbar
 import com.proptit.todohive.R
 import com.proptit.todohive.common.SwipeToDeleteCallback
+import com.proptit.todohive.data.local.AppDatabase
 import com.proptit.todohive.data.local.entity.TaskEntity
 import com.proptit.todohive.databinding.FragmentIndexBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class IndexFragment : Fragment() {
 
@@ -25,13 +37,17 @@ class IndexFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var undoAnimator: ValueAnimator? = null
-    private val UNDO_DURATION = 4000L
 
     private val taskViewModel: TasksViewModel by viewModels {
         TasksViewModel.Factory(requireContext().applicationContext)
     }
 
-    private val adapter by lazy { TaskAdapter { task -> taskViewModel.onToggleDone(task) } }
+    private val adapter by lazy {
+        TaskAdapter(
+            onToggleDone = { task -> taskViewModel.onToggleDone(task) },
+            onClick = { task -> openTaskDetail(task.task_id) }
+        )
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentIndexBinding.inflate(inflater, container, false)
@@ -46,6 +62,7 @@ class IndexFragment : Fragment() {
         attachSwipeToDelete()
         initUndoTimerBar()
         setupFilterMenu()
+        loadUserAvatar()
     }
 
     private fun setupRecyclerView() {
@@ -68,81 +85,64 @@ class IndexFragment : Fragment() {
     }
 
     private fun showDeletionSnackbar(task: TaskEntity) {
-        val snack = Snackbar
-            .make(binding.root, getString(R.string.deleted_fmt, task.title), Snackbar.LENGTH_LONG)
+        val snack = createBaseSnackbar(getString(R.string.deleted_fmt, task.title))
             .setAction(R.string.undo) {
                 taskViewModel.restore(task)
                 stopUndoTimer()
             }
-            .setAnchorView(R.id.fabAdd)
-            .setDuration(UNDO_DURATION.toInt())
-
         customizeSnackbar(snack)
-
         snack.addCallback(object : Snackbar.Callback() {
             override fun onShown(sb: Snackbar) { startUndoTimer() }
             override fun onDismissed(tb: Snackbar, event: Int) { stopUndoTimer() }
         })
-
         snack.show()
+    }
+
+    private fun createBaseSnackbar(message: String): Snackbar {
+        return Snackbar
+            .make(binding.root, message, Snackbar.LENGTH_LONG)
+            .setAnchorView(R.id.fabAdd)
+            .setDuration(UNDO_DURATION.toInt())
     }
 
     private fun customizeSnackbar(snack: Snackbar) {
         val ctx = requireContext()
         val view = snack.view
-
-        val radiusPx = (12 * resources.displayMetrics.density).toInt()
-        val bgColor  = ContextCompat.getColor(ctx, R.color.gray)
-
-        val shape = com.google.android.material.shape.MaterialShapeDrawable(
-            com.google.android.material.shape.ShapeAppearanceModel()
-                .toBuilder()
-                .setAllCornerSizes(radiusPx.toFloat())
-                .build()
+        view.background = MaterialShapeDrawable(
+            ShapeAppearanceModel().toBuilder().setAllCornerSizes(dp(12f)).build()
         ).apply {
-            fillColor = android.content.res.ColorStateList.valueOf(bgColor)
-            elevation = (6 * resources.displayMetrics.density)
+            fillColor = android.content.res.ColorStateList.valueOf(ContextCompat.getColor(ctx, R.color.gray))
+            elevation = dp(6f)
         }
-        view.background = shape
-
         (view.layoutParams as? ViewGroup.MarginLayoutParams)?.let { lp ->
-            val m = (12 * resources.displayMetrics.density).toInt()
+            val m = dpInt(12f)
             lp.setMargins(m, m, m, m)
             view.layoutParams = lp
         }
-        val textView = view.findViewById<android.widget.TextView>(
-            com.google.android.material.R.id.snackbar_text
-        )
-        val actionBtn = view.findViewById<android.widget.Button>(
-            com.google.android.material.R.id.snackbar_action
-        )
-
+        val textView = view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        val actionBtn = view.findViewById<Button>(com.google.android.material.R.id.snackbar_action)
         textView.setTextColor(ContextCompat.getColor(ctx, R.color.white))
         actionBtn.setTextColor(ContextCompat.getColor(ctx, R.color.warning))
-
         ContextCompat.getDrawable(ctx, R.drawable.ic_warning)?.mutate()?.let { d ->
             DrawableCompat.setTint(d, ContextCompat.getColor(ctx, R.color.warning))
             textView.setCompoundDrawablesRelativeWithIntrinsicBounds(d, null, null, null)
-            textView.compoundDrawablePadding = (8 * resources.displayMetrics.density).toInt()
+            textView.compoundDrawablePadding = dpInt(8f)
             textView.maxLines = 3
         }
     }
 
-
     private fun initUndoTimerBar() {
         binding.undoTimer.isIndeterminate = false
-        binding.undoTimer.max = 1000
-        binding.undoTimer.progress = 1000
+        binding.undoTimer.max = TIMER_MAX
+        binding.undoTimer.progress = TIMER_MAX
     }
 
     private fun startUndoTimer() {
-        binding.undoTimer.apply {
-            isVisible = true
-            max = 1000
-            progress = 1000
-        }
+        binding.undoTimer.isVisible = true
+        binding.undoTimer.max = TIMER_MAX
+        binding.undoTimer.progress = TIMER_MAX
         undoAnimator?.cancel()
-        undoAnimator = ValueAnimator.ofInt(1000, 0).apply {
+        undoAnimator = ValueAnimator.ofInt(TIMER_MAX, 0).apply {
             duration = UNDO_DURATION
             addUpdateListener { anim -> binding.undoTimer.progress = anim.animatedValue as Int }
             start()
@@ -173,9 +173,39 @@ class IndexFragment : Fragment() {
         }
     }
 
+    private fun openTaskDetail(taskId: Long) {
+        val action = IndexFragmentDirections.actionIndexFragmentToTaskFragment(taskId)
+        findNavController().navigate(action)
+    }
+
+    private fun loadUserAvatar() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val ctx = requireContext().applicationContext
+            val prefs = ctx.getSharedPreferences("app", Context.MODE_PRIVATE)
+            val userId = prefs.getLong("remember_user_id", 1L)
+            val url = withContext(Dispatchers.IO) {
+                AppDatabase.get(ctx).userDao().getById(userId)?.avatar_url
+            }
+            Glide.with(this@IndexFragment)
+                .load(url)
+                .placeholder(R.drawable.ic_user_placeholder)
+                .error(R.drawable.ic_user_placeholder)
+                .circleCrop()
+                .into(binding.ivUser)
+        }
+    }
+
+    private fun dp(value: Float): Float = value * resources.displayMetrics.density
+    private fun dpInt(value: Float): Int = dp(value).toInt()
+
     override fun onDestroyView() {
         stopUndoTimer()
         _binding = null
         super.onDestroyView()
+    }
+
+    companion object {
+        private const val TIMER_MAX = 1000
+        private const val UNDO_DURATION = 4000L
     }
 }

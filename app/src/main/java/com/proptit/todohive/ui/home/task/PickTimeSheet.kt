@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.proptit.todohive.databinding.BottomsheetPickTimeBinding
+import com.proptit.todohive.ui.home.TaskFragment
 import com.proptit.todohive.ui.home.task.add.AddTaskSheetViewModel
 import java.time.*
 
@@ -18,7 +20,7 @@ class PickTimeSheet : BottomSheetDialogFragment() {
     private var _binding: BottomsheetPickTimeBinding? = null
     private val binding get() = _binding!!
 
-    private val vm: AddTaskSheetViewModel by activityViewModels()
+    private val viewModel: AddTaskSheetViewModel by activityViewModels()
 
     private var pickedDate: LocalDate? = null
     private var pickedTime: LocalTime? = null
@@ -31,8 +33,16 @@ class PickTimeSheet : BottomSheetDialogFragment() {
         return binding.root
     }
 
+    private fun onTimePicked(epochMillis: Long) {
+        parentFragmentManager.setFragmentResult(
+            TaskFragment.REQ_TIME,
+            bundleOf(TaskFragment.RES_TIME_MS to epochMillis)
+        )
+        dismiss()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        vm.pickedInstant.value?.let { instant ->
+        viewModel.pickedInstant.value?.let { instant ->
             val zdt = instant.atZone(zone)
             pickedDate = zdt.toLocalDate()
             pickedTime = zdt.toLocalTime()
@@ -71,7 +81,7 @@ class PickTimeSheet : BottomSheetDialogFragment() {
     }
 
     private fun openDatePicker() {
-        val initialDate = pickedDate ?: vm.pickedInstant.value?.atZone(zone)?.toLocalDate() ?: LocalDate.now(zone)
+        val initialDate = pickedDate ?: viewModel.pickedInstant.value?.atZone(zone)?.toLocalDate() ?: LocalDate.now(zone)
         val selection = initialDate.atStartOfDay(zone).toInstant().toEpochMilli()
 
         val picker = MaterialDatePicker.Builder.datePicker()
@@ -87,7 +97,7 @@ class PickTimeSheet : BottomSheetDialogFragment() {
     }
 
     private fun openTimePicker() {
-        val seed = pickedTime ?: vm.pickedInstant.value?.atZone(zone)?.toLocalTime() ?: LocalTime.now(zone)
+        val seed = pickedTime ?: viewModel.pickedInstant.value?.atZone(zone)?.toLocalTime() ?: LocalTime.now(zone)
         val picker = MaterialTimePicker.Builder()
             .setTitleText("Pick time")
             .setTimeFormat(TimeFormat.CLOCK_24H)
@@ -104,14 +114,19 @@ class PickTimeSheet : BottomSheetDialogFragment() {
 
     private fun onConfirm() {
         if (pickedDate == null && pickedTime == null) {
-            vm.clearPickedInstant()
+            viewModel.clearPickedInstant()
             dismiss()
             return
         }
         val d = pickedDate ?: LocalDate.now(zone)
         val t = pickedTime ?: DEFAULT_TIME
         val instant = ZonedDateTime.of(d, t, zone).toInstant()
-        vm.setPickedInstant(instant)
+        viewModel.setPickedInstant(instant)
+        parentFragmentManager.setFragmentResult(
+            TaskFragment.REQ_TIME,
+            bundleOf(TaskFragment.RES_TIME_MS to instant.toEpochMilli())
+        )
+
         dismiss()
     }
 

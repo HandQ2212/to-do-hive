@@ -4,6 +4,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("kotlin-parcelize")
     id("kotlin-kapt")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -16,7 +17,6 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -58,13 +58,16 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
 
-    // Others
     implementation("androidx.core:core-splashscreen:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
 
-    // Lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
+
+    // Glide
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.play.services.cast.tv)
+    kapt("com.github.bumptech.glide:compiler:4.16.0")
 
     // Room
     val room_version = "2.7.2"

@@ -30,9 +30,13 @@
         tools:layout="@layout/fragment_create_categories" />
     <fragment
         android:id="@+id/taskFragment"
-        android:name="com.proptit.todohive.ui.home.task.TaskFragment"
+        android:name="com.proptit.todohive.ui.home.TaskFragment"
         android:label="fragment_task"
         tools:layout="@layout/fragment_task" >
+        <argument
+            android:name="task_id"
+            app:argType="long"
+            android:defaultValue="-1L" />
     </fragment>
     <fragment
         android:id="@+id/calendarFragment"

@@ -1,9 +1,9 @@
 package com.proptit.todohive.ui.home.binding
 
-
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.widget.ImageView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.google.android.material.card.MaterialCardView
@@ -18,18 +18,24 @@ fun Chip.bindCategory(category: CategoryEntity?) {
         ?: context.getString(R.string.category_default)
     text = label
     contentDescription = label
-    setTextColor(ContextCompat.getColor(context, android.R.color.white))
 
     val colorInt = runCatching { Color.parseColor(category?.color_hex ?: "#6C63FF") }
         .getOrElse { Color.parseColor("#6C63FF") }
     chipBackgroundColor = ColorStateList.valueOf(colorInt)
 
-    val iconRes = CategoryIconRegistry.resolve(category?.icon)
-    chipIcon = ContextCompat.getDrawable(context, iconRes)
-    isChipIconVisible = true
-    chipIconTint = ColorStateList.valueOf(
-        ContextCompat.getColor(context, android.R.color.white)
-    )
+    val iconName = category?.icon?.trim().orEmpty()
+    val directId = if (iconName.isNotEmpty()) {
+        resources.getIdentifier(iconName, "drawable", context.packageName)
+    } else 0
+    val finalIconId = if (directId != 0) directId else CategoryIconRegistry.resolve(iconName)
+
+    val drawable = AppCompatResources.getDrawable(context, finalIconId)
+    chipIcon = drawable
+    isChipIconVisible = drawable != null
+
+    val white = ContextCompat.getColor(context, android.R.color.white)
+    setTextColor(white)
+    chipIconTint = ColorStateList.valueOf(white)
 }
 
 @BindingAdapter("cardBackgroundColorHex")
