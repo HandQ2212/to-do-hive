@@ -10,6 +10,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.proptit.todohive.R
 import com.proptit.todohive.data.local.AppDatabase
@@ -38,6 +40,7 @@ class CreateCategoryActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setPreviewColor(pickedColorHex)
+        setUpWindowInsets()
 
         binding.btnPickIcon.setOnClickListener {
             activityResultPickIcon.launch("image/*")
@@ -85,6 +88,14 @@ class CreateCategoryActivity : AppCompatActivity() {
                 )
                 finish()
             }
+        }
+    }
+
+    private fun setUpWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
         }
     }
 

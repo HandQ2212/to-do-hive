@@ -47,26 +47,16 @@ class StartScreenFragment : Fragment() {
 
     private fun setupLogin() {
         binding.btnLogin.setOnClickListener {
-            val navOptions = androidx.navigation.NavOptions.Builder()
-                .setPopUpTo(R.id.startScreenFragment, true)
-                .build()
             findNavController().navigate(
-                R.id.action_to_login,
-                null,
-                navOptions
+                R.id.action_to_login
             )
         }
     }
 
     private fun setupCreateAccount() {
         binding.btnCreateAccount.setOnClickListener {
-            val navOptions = androidx.navigation.NavOptions.Builder()
-                .setPopUpTo(R.id.startScreenFragment, true)
-                .build()
             findNavController().navigate(
-                R.id.action_startScreenFragment_to_registerFragment,
-                null,
-                navOptions
+                R.id.action_startScreenFragment_to_registerFragment
             )
         }
     }

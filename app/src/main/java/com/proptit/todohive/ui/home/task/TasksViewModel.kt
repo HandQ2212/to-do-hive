@@ -18,8 +18,8 @@ class TasksViewModel(private val repo: TaskRepository) : ViewModel() {
     val selectedFilter = MutableLiveData(Filter.TODAY)
     fun setFilter(f: Filter) { selectedFilter.value = f }
 
-    val filterTitle: LiveData<String> = selectedFilter.map { f ->
-        when (f) {
+    val filterTitle: LiveData<String> = selectedFilter.map {
+        when (it) {
             Filter.TODAY -> "Today"
             Filter.TOMORROW -> "Tomorrow"
             Filter.YESTERDAY -> "Yesterday"
@@ -28,21 +28,20 @@ class TasksViewModel(private val repo: TaskRepository) : ViewModel() {
     }
 
     val query = MutableLiveData("")
-
     private val debouncedQuery = MediatorLiveData<String>().apply {
         var job: Job? = null
         addSource(query) { text ->
             job?.cancel()
             job = viewModelScope.launch {
-                delay(80)
+                delay(2000)
                 value = text
             }
         }
     }
 
     private val source: LiveData<List<TaskWithCategory>> =
-        selectedFilter.switchMap { f ->
-            when (f) {
+        selectedFilter.switchMap {
+            when (it) {
                 Filter.TODAY -> repo.observeByDayRange(0)
                 Filter.TOMORROW -> repo.observeByDayRange(+1)
                 Filter.YESTERDAY -> repo.observeByDayRange(-1)
@@ -66,6 +65,8 @@ class TasksViewModel(private val repo: TaskRepository) : ViewModel() {
             addSource(source) { recompute() }
             addSource(debouncedQuery) { recompute() }
         }
+
+    fun setQuery(text: String) { query.value = text }
 
     fun onToggleDone(task: TaskEntity) = viewModelScope.launch {
         repo.toggleCompleted(task.task_id)

@@ -83,10 +83,7 @@ class LogInFragment : Fragment() {
 
     private fun setupRegisterLink() {
         binding.tvRegister.setOnClickListener {
-            val navOptions = androidx.navigation.NavOptions.Builder()
-                .setPopUpTo(R.id.loginFragment, true)
-                .build()
-            findNavController().navigate(R.id.action_loginFragment_to_registerFragment, null, navOptions)
+            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
     }
 

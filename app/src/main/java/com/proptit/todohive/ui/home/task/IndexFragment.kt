@@ -12,6 +12,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -28,6 +29,8 @@ import com.proptit.todohive.data.local.AppDatabase
 import com.proptit.todohive.data.local.entity.TaskEntity
 import com.proptit.todohive.databinding.FragmentIndexBinding
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -63,6 +66,7 @@ class IndexFragment : Fragment() {
         initUndoTimerBar()
         setupFilterMenu()
         loadUserAvatar()
+        observeSearchInput()
     }
 
     private fun setupRecyclerView() {
@@ -146,6 +150,16 @@ class IndexFragment : Fragment() {
             duration = UNDO_DURATION
             addUpdateListener { anim -> binding.undoTimer.progress = anim.animatedValue as Int }
             start()
+        }
+    }
+    private fun observeSearchInput() {
+        var searchJob: Job? = null
+        binding.etSearch.addTextChangedListener { text ->
+            searchJob?.cancel()
+            searchJob = viewLifecycleOwner.lifecycleScope.launch {
+                delay(2000) //debounce
+                taskViewModel.setQuery(text?.toString().orEmpty())
+            }
         }
     }
 
