@@ -44,20 +44,22 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE task_id = :id AND user_id = :userId LIMIT 1")
     suspend fun getById(id: Long, userId: Long): TaskEntity?
 
-    @Query("SELECT * FROM tasks WHERE user_id = :userId ORDER BY even_at ASC")
+    @Query("SELECT * FROM tasks WHERE user_id = :userId AND is_deleted = 0 ORDER BY even_at ASC")
     fun observeAll(userId: Long): LiveData<List<TaskEntity>>
 
     @Transaction
     @Query("""
         SELECT * FROM tasks 
-        WHERE user_id = :userId
+        WHERE user_id = :userId AND is_deleted = 0
         ORDER BY is_completed ASC, even_at ASC
     """)
     fun observeAllWithCategory(userId: Long): LiveData<List<TaskWithCategory>>
+
     @Transaction
     @Query("""
         SELECT * FROM tasks
         WHERE user_id = :userId
+          AND is_deleted = 0
           AND date(even_at/1000, 'unixepoch', 'localtime') =
               date(strftime('%s','now','localtime') + :dayOffset*24*60*60, 'unixepoch', 'localtime')
         ORDER BY even_at ASC
@@ -68,6 +70,7 @@ interface TaskDao {
     @Query("""
         SELECT * FROM tasks
         WHERE user_id = :userId
+          AND is_deleted = 0
           AND is_completed = 1
         ORDER BY even_at DESC
     """)
@@ -77,6 +80,7 @@ interface TaskDao {
     @Query("""
         SELECT * FROM tasks
         WHERE user_id = :userId
+          AND is_deleted = 0
           AND even_at BETWEEN :start AND :end
         ORDER BY even_at ASC
     """)
@@ -93,4 +97,29 @@ interface TaskDao {
     @Transaction
     @Query("SELECT * FROM tasks WHERE task_id = :id AND user_id = :userId LIMIT 1")
     suspend fun getTaskWithCategoryById(id: Long, userId: Long): TaskWithCategory?
+
+    @Query("UPDATE tasks SET is_deleted = 1, deleted_at = :deletedAt WHERE task_id = :taskId AND user_id = :userId")
+    suspend fun moveToBin(taskId: Long, userId: Long, deletedAt: Instant): Int
+
+    @Query("UPDATE tasks SET is_deleted = 0, deleted_at = NULL WHERE task_id = :taskId AND user_id = :userId")
+    suspend fun restoreFromBin(taskId: Long, userId: Long): Int
+
+    @Transaction
+    @Query("""
+        SELECT * FROM tasks
+        WHERE user_id = :userId
+          AND is_deleted = 1
+        ORDER BY deleted_at DESC
+    """)
+    fun observeDeleted(userId: Long): LiveData<List<TaskWithCategory>>
+
+    @Query("DELETE FROM tasks WHERE task_id = :taskId AND user_id = :userId")
+    suspend fun deleteForever(taskId: Long, userId: Long): Int
+
+    @Query("UPDATE tasks SET is_deleted = 0 WHERE is_deleted = 1")
+    suspend fun restoreAll()
+
+    @Query("DELETE FROM tasks WHERE is_deleted = 1")
+    suspend fun clearAll()
+
 }

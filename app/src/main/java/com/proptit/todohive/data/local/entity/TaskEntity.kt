@@ -41,6 +41,12 @@ data class TaskEntity(
     @ColumnInfo(name = "is_completed", defaultValue = "0")
     val is_completed: Boolean = false,
 
+    @ColumnInfo(name = "is_deleted", defaultValue = "0")
+    val is_deleted: Boolean = false,
+
+    @ColumnInfo(name = "deleted_at")
+    val deleted_at: Instant? = null,
+
     @ColumnInfo(name = "user_id")
     val user_id: Long,
 

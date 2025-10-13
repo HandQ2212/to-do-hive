@@ -40,6 +40,7 @@ class IndexFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var undoAnimator: ValueAnimator? = null
+    private var currentSnack: Snackbar? = null
 
     private val taskViewModel: TasksViewModel by viewModels {
         TasksViewModel.Factory(requireContext().applicationContext)
@@ -94,11 +95,20 @@ class IndexFragment : Fragment() {
                 taskViewModel.restore(task)
                 stopUndoTimer()
             }
+
         customizeSnackbar(snack)
+
         snack.addCallback(object : Snackbar.Callback() {
-            override fun onShown(sb: Snackbar) { startUndoTimer() }
-            override fun onDismissed(tb: Snackbar, event: Int) { stopUndoTimer() }
+            override fun onShown(sb: Snackbar) {
+                if (_binding != null) startUndoTimer()
+            }
+
+            override fun onDismissed(tb: Snackbar, event: Int) {
+                stopUndoTimer()
+            }
         })
+
+        currentSnack = snack
         snack.show()
     }
 
@@ -142,31 +152,36 @@ class IndexFragment : Fragment() {
     }
 
     private fun startUndoTimer() {
-        binding.undoTimer.isVisible = true
-        binding.undoTimer.max = TIMER_MAX
-        binding.undoTimer.progress = TIMER_MAX
+        _binding?.let { b ->
+            b.undoTimer.isVisible = true
+            b.undoTimer.max = TIMER_MAX
+            b.undoTimer.progress = TIMER_MAX
+        }
         undoAnimator?.cancel()
         undoAnimator = ValueAnimator.ofInt(TIMER_MAX, 0).apply {
             duration = UNDO_DURATION
-            addUpdateListener { anim -> binding.undoTimer.progress = anim.animatedValue as Int }
-            start()
-        }
-    }
-    private fun observeSearchInput() {
-        var searchJob: Job? = null
-        binding.etSearch.addTextChangedListener { text ->
-            searchJob?.cancel()
-            searchJob = viewLifecycleOwner.lifecycleScope.launch {
-                delay(2000) //debounce
-                taskViewModel.setQuery(text?.toString().orEmpty())
+            addUpdateListener { anim ->
+                _binding?.undoTimer?.progress = anim.animatedValue as Int
             }
+            start()
         }
     }
 
     private fun stopUndoTimer() {
         undoAnimator?.cancel()
         undoAnimator = null
-        binding.undoTimer.isVisible = false
+        _binding?.undoTimer?.isVisible = false
+    }
+
+    private fun observeSearchInput() {
+        var searchJob: Job? = null
+        binding.etSearch.addTextChangedListener { text ->
+            searchJob?.cancel()
+            searchJob = viewLifecycleOwner.lifecycleScope.launch {
+                delay(2000)
+                taskViewModel.setQuery(text?.toString().orEmpty())
+            }
+        }
     }
 
     private fun setupFilterMenu() {
@@ -175,8 +190,8 @@ class IndexFragment : Fragment() {
                 menuInflater.inflate(R.menu.menu_filter, menu)
                 setOnMenuItemClickListener { item ->
                     when (item.itemId) {
-                        R.id.action_today     -> taskViewModel.setFilter(Filter.TODAY)
-                        R.id.action_tomorrow  -> taskViewModel.setFilter(Filter.TOMORROW)
+                        R.id.action_today -> taskViewModel.setFilter(Filter.TODAY)
+                        R.id.action_tomorrow -> taskViewModel.setFilter(Filter.TOMORROW)
                         R.id.action_yesterday -> taskViewModel.setFilter(Filter.YESTERDAY)
                         R.id.action_completed -> taskViewModel.setFilter(Filter.COMPLETED)
                         else -> return@setOnMenuItemClickListener false
@@ -214,6 +229,8 @@ class IndexFragment : Fragment() {
 
     override fun onDestroyView() {
         stopUndoTimer()
+        currentSnack?.dismiss()
+        currentSnack = null
         _binding = null
         super.onDestroyView()
     }
