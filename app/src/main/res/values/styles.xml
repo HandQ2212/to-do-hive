@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ToDoHive.BottomAppBar.Cutout" parent="Widget.MaterialComponents.BottomAppBar">
+        <item name="backgroundTint">@color/gray</item>
+        <item name="fabAlignmentMode">center</item>
+        <item name="hideOnScroll">true</item>
+
+        <item name="fabCradleMargin">8dp</item>
+        <item name="fabCradleRoundedCornerRadius">40dp</item>
+        <item name="fabCradleVerticalOffset">0dp</item>
+    </style>
+
+
+    <style name="NoActiveIndicator" parent="">
+        <item name="android:width">0dp</item>
+        <item name="android:height">0dp</item>
+        <item name="android:color">@android:color/transparent</item>
+    </style>
+
+    <style name="Shape.Fab.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="ProfileRowStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:paddingEnd">6dp</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="ProfileRowIcon">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:tint">@color/white</item>
+        <item name="android:layout_marginEnd">16dp</item>
+    </style>
+
+    <style name="ProfileRowIconRed">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:tint">#FF4949</item>
+        <item name="android:layout_marginEnd">16dp</item>
+    </style>
+
+    <style name="ProfileRowText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textAppearance">@style/TextAppearance.Material3.BodyLarge</item>
+    </style>
+
+    <style name="ProfileRowChevron">
+        <item name="android:layout_width">20dp</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:tint">?attr/colorOnSurfaceVariant</item>
+    </style>
+</resources>

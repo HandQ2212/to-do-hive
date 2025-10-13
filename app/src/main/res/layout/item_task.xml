@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="task"
+            type="com.proptit.todohive.data.local.entity.TaskEntity"/>
+        <variable
+            name="onToggleDone"
+            type="kotlin.jvm.functions.Function1&lt;com.proptit.todohive.data.local.entity.TaskEntity, kotlin.Unit&gt;"/>
+        <variable
+            name="viewModel"
+            type="com.proptit.todohive.ui.home.task.TasksViewModel" />
+
+        <variable
+            name="category"
+            type="com.proptit.todohive.data.local.entity.CategoryEntity" />
+
+        <variable name="taskTitle"    type="String"/>
+        <variable name="taskTime"     type="String"/>
+
+        <variable name="priorityText" type="String"/>
+        <variable name="subCountText" type="String"/>
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        app:cardBackgroundColor="#2A2A2A"
+        app:cardCornerRadius="4dp"
+        app:strokeColor="#3A3A3A"
+        app:strokeWidth="1dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp">
+
+            <ImageView
+                android:id="@+id/ivCheck"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_circle_unchecked"
+                app:tint="#D0D0D0"
+                android:clickable="true"
+                android:focusable="false"
+                android:contentDescription="@string/add_task"
+                app:isDone='@{task.is_completed}'
+                android:onClick='@{(v) -> onToggleDone.invoke(task)}'
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="8dp"
+                />
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"
+                android:scrollHorizontally="true"
+                android:fadingEdgeLength="16dp"
+                android:text='@{taskTitle}'
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@id/ivCheck"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="4dp"/>
+
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='@{taskTime}'
+                android:textColor="#BDBDBD"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivCheck"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipCategory"
+                style="@style/Widget.Material3.Chip.Assist"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Chip"
+                app:bindCategory='@{category}'
+                app:chipEndPadding="10dp"
+                app:chipStartPadding="8dp"
+                app:iconStartPadding="6dp"
+                app:layout_constraintEnd_toStartOf="@id/priorityBadge"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle"
+                app:rippleColor="@android:color/transparent" />
+
+            <LinearLayout
+                android:id="@+id/priorityBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="33dp"
+                android:background="@drawable/bg_priority_badge"
+                android:gravity="center_vertical"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="4dp">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_flag"
+                    app:tint="#BDBEF5" />
+
+                <TextView
+                    android:id="@+id/tvPriority"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text='@{priorityText}'
+                    android:textColor="#BDBEF5"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>
