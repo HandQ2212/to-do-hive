@@ -1,21 +1,218 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/profileRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.ProfileFragment">
+    android:fillViewport="true"
+    android:background="@color/dark"
+    tools:context=".ui.home.profile.ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/profileContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
-
-    <Button
-        android:id="@+id/btn_create_account"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Log out"/>
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="24dp">
 
-</FrameLayout>
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:textColor="@android:color/white"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Avatar -->
+        <ImageView
+            android:id="@+id/imgAvatar"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_marginTop="20dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="ContentDescription"
+            tools:src="@tools:sample/avatars"/>
+
+        <!-- Name -->
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="@android:color/white"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:layout_constraintTop_toBottomOf="@id/imgAvatar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Martha Hays" />
+
+        <!-- Stats -->
+        <LinearLayout
+            android:id="@+id/statsRow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/tvName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardLeft"
+                style="@style/Widget.Material3.CardView.Elevated"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="@color/dark">
+
+                <TextView
+                    android:id="@+id/tvTaskLeft"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/gray"
+                    android:gravity="center"
+                    android:textColor="@android:color/white"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    tools:text="10 Task left" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDone"
+                style="@style/Widget.Material3.CardView.Elevated"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="@color/dark">
+
+                <TextView
+                    android:id="@+id/tvTaskDone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:background="@color/gray"
+                    android:textColor="@android:color/white"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    tools:text="5 Task done" />
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <!-- SECTION: Settings -->
+        <TextView
+            android:id="@+id/labelSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:text="Settings"
+            android:textColor="@color/gray"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+            app:layout_constraintTop_toBottomOf="@id/statsRow"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/groupSettings"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="?attr/dividerHorizontal"
+            android:showDividers="middle"
+            app:layout_constraintTop_toBottomOf="@id/labelSettings"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:id="@+id/rowAppSettings"
+                style="@style/ProfileRowStyle"
+                android:contentDescription="App Settings">
+                <ImageView style="@style/ProfileRowIcon" app:srcCompat="@drawable/ic_setting" />
+                <TextView style="@style/ProfileRowText"
+                    android:textColor="@android:color/white"
+                    android:text="App Settings" />
+                <ImageView style="@style/ProfileRowChevron" app:srcCompat="@drawable/ic_chevron_right_24" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- SECTION: Account -->
+        <TextView
+            android:id="@+id/labelAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:text="Account"
+            android:textColor="@color/gray"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+            app:layout_constraintTop_toBottomOf="@id/groupSettings"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/groupAccount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="?attr/dividerHorizontal"
+            android:showDividers="middle"
+            app:layout_constraintTop_toBottomOf="@id/labelAccount"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:id="@+id/rowChangeName"
+                style="@style/ProfileRowStyle">
+                <ImageView style="@style/ProfileRowIcon" app:srcCompat="@drawable/ic_person"/>
+                <TextView style="@style/ProfileRowText"
+                    android:textColor="@android:color/white"
+                    android:text="Change account name"/>
+                <ImageView style="@style/ProfileRowChevron" app:srcCompat="@drawable/ic_chevron_right_24"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rowChangePassword"
+                style="@style/ProfileRowStyle">
+                <ImageView style="@style/ProfileRowIcon" app:srcCompat="@drawable/ic_lock"/>
+                <TextView style="@style/ProfileRowText"
+                    android:textColor="@android:color/white"
+                    android:text="Change account password"/>
+                <ImageView style="@style/ProfileRowChevron" app:srcCompat="@drawable/ic_chevron_right_24"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rowChangeImage"
+                style="@style/ProfileRowStyle">
+                <ImageView style="@style/ProfileRowIcon" app:srcCompat="@drawable/ic_camera"/>
+                <TextView style="@style/ProfileRowText"
+                    android:textColor="@android:color/white"
+                    android:text="Change account Image"/>
+                <ImageView style="@style/ProfileRowChevron" app:srcCompat="@drawable/ic_chevron_right_24"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Logout -->
+        <LinearLayout
+            android:id="@+id/rowLogout"
+            style="@style/ProfileRowStyle"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/groupAccount"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+            <ImageView style="@style/ProfileRowIconRed" app:srcCompat="@drawable/ic_logout"/>
+            <TextView
+                style="@style/ProfileRowText"
+                android:text="Log out"
+                android:textColor="#FF4949" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

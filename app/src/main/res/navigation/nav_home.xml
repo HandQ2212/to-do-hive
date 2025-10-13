@@ -22,12 +22,6 @@
         android:name="com.proptit.todohive.ui.home.EmptyFragment"
         android:label="fragment_empty"
         tools:layout="@layout/fragment_empty" />
-
-    <fragment
-        android:id="@+id/createCategoriesFragment"
-        android:name="com.proptit.todohive.ui.home.CreateCategoriesFragment"
-        android:label="fragment_create_categories"
-        tools:layout="@layout/activity_create_categories" />
     <fragment
         android:id="@+id/taskFragment"
         android:name="com.proptit.todohive.ui.home.TaskFragment"
@@ -54,7 +48,7 @@
         tools:layout="@layout/fragment_focus" />
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.proptit.todohive.ui.home.ProfileFragment"
+        android:name="com.proptit.todohive.ui.home.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" >
         <action
