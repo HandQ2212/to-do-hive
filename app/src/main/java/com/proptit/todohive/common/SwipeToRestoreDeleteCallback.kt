@@ -25,20 +25,20 @@ class SwipeToRestoreDeleteCallback(
     private val iconW = (icDelete?.intrinsicWidth ?: 0).coerceAtLeast(icRestore?.intrinsicWidth ?: 0)
     private val iconH = (icDelete?.intrinsicHeight ?: 0).coerceAtLeast(icRestore?.intrinsicHeight ?: 0)
 
-    override fun onMove(rv: RecyclerView, vh: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder) = false
+    override fun onMove(rv: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder) = false
 
-    override fun onSwiped(vh: RecyclerView.ViewHolder, dir: Int) {
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, dir: Int) {
         when (dir) {
-            ItemTouchHelper.LEFT  -> onSwipedLeft(vh)
-            ItemTouchHelper.RIGHT -> onSwipedRight(vh)
+            ItemTouchHelper.LEFT  -> onSwipedLeft(viewHolder)
+            ItemTouchHelper.RIGHT -> onSwipedRight(viewHolder)
         }
     }
 
     override fun onChildDraw(
-        c: Canvas, rv: RecyclerView, vh: RecyclerView.ViewHolder,
+        c: Canvas, rv: RecyclerView, viewHolder: RecyclerView.ViewHolder,
         dX: Float, dY: Float, state: Int, active: Boolean
     ) {
-        val item = vh.itemView
+        val item = viewHolder.itemView
         val h = item.height
         val margin = (h - iconH) / 2
 
@@ -69,6 +69,6 @@ class SwipeToRestoreDeleteCallback(
             bgRestore.setBounds(0, 0, 0, 0)
         }
 
-        super.onChildDraw(c, rv, vh, dX, dY, state, active)
+        super.onChildDraw(c, rv, viewHolder, dX, dY, state, active)
     }
 }

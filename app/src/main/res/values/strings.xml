@@ -41,4 +41,7 @@
     <string name="all_restored">All restored</string>
     <string name="nothing_to_clear">Nothing to clear</string>
     <string name="delete_all_permanently_confirm">Delete all permanetly confirm</string>
+    <string name="completed">Completed</string>
+    <string name="no_tasks">No task</string>
+    <string name="in_progress">In progress</string>
 </resources>
