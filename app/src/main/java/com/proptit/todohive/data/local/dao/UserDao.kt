@@ -3,6 +3,7 @@ package com.proptit.todohive.data.local.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.proptit.todohive.data.local.entity.UserEntity
+import java.time.Instant
 
 @Dao
 interface UserDao {
@@ -32,4 +33,13 @@ interface UserDao {
 
     @Query("SELECT EXISTS(SELECT 1 FROM users WHERE username = :username)")
     suspend fun existsByUsername(username: String): Boolean
+
+    @Query("UPDATE users SET username = :name, updated_at = :updatedAt WHERE user_id = :id")
+    suspend fun updateNameById(id: Long, name: String, updatedAt: Instant): Int
+
+    @Query("UPDATE users SET avatar_url = :url, updated_at = :updatedAt WHERE user_id = :id")
+    suspend fun updateAvatarById(id: Long, url: String?, updatedAt: Instant): Int
+
+    @Query("UPDATE users SET password_hash = :hash, updated_at = :updatedAt WHERE user_id = :id")
+    suspend fun updatePasswordHashById(id: Long, hash: String, updatedAt: Instant): Int
 }
