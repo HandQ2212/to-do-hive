@@ -18,7 +18,7 @@ import java.time.ZoneId
 
 @Database(
     entities = [UserEntity::class, CategoryEntity::class, TaskEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(InstantConverters::class)

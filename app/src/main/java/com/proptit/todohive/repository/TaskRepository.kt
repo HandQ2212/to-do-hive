@@ -69,6 +69,8 @@ class TaskRepository(
             even_at = at,
             priority = priority,
             is_completed = false,
+            is_deleted = false,
+            deleted_at = null,
             user_id = currentUserId,
             category_id = categoryId,
             description = description
@@ -108,18 +110,39 @@ class TaskRepository(
     }
 
     suspend fun delete(id: Long) {
-        val changed = taskDao.deleteById(id, currentUserId)
+        moveToBin(id)
+    }
+
+    fun observeDeleted(): LiveData<List<TaskWithCategory>> =
+        taskDao.observeDeleted(currentUserId)
+
+    suspend fun moveToBin(taskId: Long) {
+        val changed = taskDao.moveToBin(taskId, currentUserId, Instant.now())
         if (changed == 0) throw IllegalStateException("Task not found or not owned by current user.")
     }
 
-    suspend fun deleteAll() {
-        taskDao.deleteAll(currentUserId)
+    suspend fun restoreFromBin(taskId: Long) {
+        val changed = taskDao.restoreFromBin(taskId, currentUserId)
+        if (changed == 0) throw IllegalStateException("Task not found or not owned by current user.")
+    }
+
+    suspend fun deleteForever(taskId: Long) {
+        val changed = taskDao.deleteForever(taskId, currentUserId)
+        if (changed == 0) throw IllegalStateException("Task not found or not owned by current user.")
     }
 
     suspend fun restore(task: TaskEntity): Long {
         if (task.user_id != currentUserId) {
             throw IllegalArgumentException("Cannot restore task of another user.")
         }
-        return taskDao.upsert(task)
+        return taskDao.upsert(task.copy(is_deleted = false, deleted_at = null))
+    }
+
+    suspend fun restoreAll() {
+        taskDao.restoreAll()
+    }
+
+    suspend fun clearAll() {
+        taskDao.clearAll()
     }
 }

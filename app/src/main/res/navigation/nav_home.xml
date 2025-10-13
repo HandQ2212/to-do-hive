@@ -42,10 +42,14 @@
             app:destination="@id/taskFragment" />
     </fragment>
     <fragment
-        android:id="@+id/focusFragment"
-        android:name="com.proptit.todohive.ui.home.FocusFragment"
-        android:label="fragment_focus"
-        tools:layout="@layout/fragment_focus" />
+        android:id="@+id/binFragment"
+        android:name="com.proptit.todohive.ui.home.bin.BinFragment"
+        android:label="fragment_bin"
+        tools:layout="@layout/fragment_bin" >
+        <action
+            android:id="@+id/action_binFragment_to_taskFragment"
+            app:destination="@id/taskFragment" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.proptit.todohive.ui.home.profile.ProfileFragment"

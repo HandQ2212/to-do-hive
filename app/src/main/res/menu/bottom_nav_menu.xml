@@ -17,8 +17,8 @@
         android:title="" />
 
     <item
-        android:id="@+id/focusFragment"
-        android:title="Focus"
+        android:id="@+id/binFragment"
+        android:title="Bin"
         android:icon="@drawable/ic_focus"/>
 
     <item

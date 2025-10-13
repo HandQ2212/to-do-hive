@@ -28,4 +28,17 @@
     <string name="delete_task">Delete task</string>
     <string name="edit_task">Edit task</string>
     <string name="error_title_required">Title cannot be empty</string>
+    <string name="restore">Restore</string>
+    <string name="delete_forever">Delete forever</string>
+    <string name="delete_forever_fmt">Delete "%1$s" permanently?</string>
+    <string name="deleted_permanently">Deleted permanently</string>
+    <string name="restored_fmt">Restored "%1$s"</string>
+    <string name="delete">delete</string>
+    <string name="no_task_in_bin">No task in Recycle Bin</string>
+    <string name="clear_all">Clear All</string>
+    <string name="restore_all">Restore All</string>
+    <string name="nothing_to_restore">Nothing to restore</string>
+    <string name="all_restored">All restored</string>
+    <string name="nothing_to_clear">Nothing to clear</string>
+    <string name="delete_all_permanently_confirm">Delete all permanetly confirm</string>
 </resources>
