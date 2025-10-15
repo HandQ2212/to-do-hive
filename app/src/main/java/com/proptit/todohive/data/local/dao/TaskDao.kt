@@ -122,4 +122,17 @@ interface TaskDao {
     @Query("DELETE FROM tasks WHERE is_deleted = 1")
     suspend fun clearAll()
 
+    @Query("""
+        SELECT * FROM tasks
+        WHERE user_id = :userId 
+          AND is_deleted = 0 
+          AND even_at >= :start 
+          AND even_at < :end
+        ORDER BY even_at ASC
+    """)
+    fun getTasksByDateRangeLive(
+        userId: Long,
+        start: Long,
+        end: Long
+    ): LiveData<List<TaskWithCategory>>
 }

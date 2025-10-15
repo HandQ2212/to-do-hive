@@ -15,22 +15,22 @@ class BottomsheetChangePassword(
 
     private var _binding: BottomsheetChangePasswordBinding? = null
     private val binding get() = _binding!!
-    private val vm: ChangePasswordSheetViewModel by viewModels()
+    private val passwordViewModel: ChangePasswordSheetViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, s: Bundle?): View {
         _binding = BottomsheetChangePasswordBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
-        binding.viewModel = vm
+        binding.viewModel = passwordViewModel
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.edtOld.doAfterTextChanged { vm.onFieldChanged() }
-        binding.edtNew.doAfterTextChanged { vm.onFieldChanged() }
+        binding.edtOld.doAfterTextChanged { passwordViewModel.onFieldChanged() }
+        binding.edtNew.doAfterTextChanged { passwordViewModel.onFieldChanged() }
 
         binding.btnCancel.setOnClickListener { dismiss() }
         binding.btnEdit.setOnClickListener {
-            vm.getPair()?.let { (o, n) ->
+            passwordViewModel.getPair()?.let { (o, n) ->
                 onSubmit(o, n)
                 dismiss()
             }

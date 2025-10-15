@@ -34,7 +34,7 @@
     </fragment>
     <fragment
         android:id="@+id/calendarFragment"
-        android:name="com.proptit.todohive.ui.home.CalendarFragment"
+        android:name="com.proptit.todohive.ui.home.calendar.CalendarFragment"
         android:label="fragment_calendar"
         tools:layout="@layout/fragment_calendar" >
         <action

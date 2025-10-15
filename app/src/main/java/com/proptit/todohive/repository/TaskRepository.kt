@@ -116,9 +116,13 @@ class TaskRepository(
     fun observeDeleted(): LiveData<List<TaskWithCategory>> =
         taskDao.observeDeleted(currentUserId)
 
-    suspend fun moveToBin(taskId: Long) {
-        val changed = taskDao.moveToBin(taskId, currentUserId, Instant.now())
+    suspend fun moveToBin(taskId: Long, userId: Long, deletedAt: Instant) {
+        val changed = taskDao.moveToBin(taskId, userId, deletedAt)
         if (changed == 0) throw IllegalStateException("Task not found or not owned by current user.")
+    }
+
+    suspend fun moveToBin(taskId: Long) {
+        moveToBin(taskId, currentUserId, Instant.now())
     }
 
     suspend fun restoreFromBin(taskId: Long) {
@@ -144,5 +148,11 @@ class TaskRepository(
 
     suspend fun clearAll() {
         taskDao.clearAll()
+    }
+    fun getTasksByDateLive(date: LocalDate): LiveData<List<TaskWithCategory>> {
+        val zone = ZoneId.systemDefault()
+        val startMillis = date.atStartOfDay(zone).toInstant().toEpochMilli()
+        val endMillis = date.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
+        return taskDao.getTasksByDateRangeLive(currentUserId, startMillis, endMillis)
     }
 }
