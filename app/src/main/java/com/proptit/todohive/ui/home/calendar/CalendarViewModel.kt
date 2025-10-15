@@ -72,7 +72,6 @@ class CalendarViewModel(private val repo: TaskRepository) : ViewModel() {
             ?: today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
         val newStart = start.plusWeeks(1)
         _currentWeekStart.value = newStart
-        _selectedDate.value = newStart
     }
 
     fun previousWeek() {
@@ -80,7 +79,6 @@ class CalendarViewModel(private val repo: TaskRepository) : ViewModel() {
             ?: today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
         val newStart = start.minusWeeks(1)
         _currentWeekStart.value = newStart
-        _selectedDate.value = newStart
     }
 
     fun selectToday() {
