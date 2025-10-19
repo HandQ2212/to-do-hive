@@ -100,7 +100,7 @@ class ProfileViewModel(
         }
     }
 
-    fun updateAvatar(url: String?) {
+    fun updateAvatarUrl(url: String?) {
         val id = userId ?: return
         viewModelScope.launch(Dispatchers.IO) {
             userDao.updateAvatarById(id, url, Instant.now())
