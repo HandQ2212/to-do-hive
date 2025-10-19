@@ -11,17 +11,9 @@
         android:label="fragment_index"
         tools:layout="@layout/fragment_index" >
         <action
-            android:id="@+id/action_indexFragment_to_emptyFragment"
-            app:destination="@id/emptyFragment" />
-        <action
             android:id="@+id/action_indexFragment_to_taskFragment"
             app:destination="@id/taskFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/emptyFragment"
-        android:name="com.proptit.todohive.ui.home.EmptyFragment"
-        android:label="fragment_empty"
-        tools:layout="@layout/fragment_empty" />
     <fragment
         android:id="@+id/taskFragment"
         android:name="com.proptit.todohive.ui.home.TaskFragment"
@@ -55,13 +47,5 @@
         android:name="com.proptit.todohive.ui.home.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" >
-        <action
-            android:id="@+id/action_profileFragment_to_appSettingFragment"
-            app:destination="@id/appSettingFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/appSettingFragment"
-        android:name="com.proptit.todohive.ui.home.AppSettingFragment"
-        android:label="fragment_app_setting"
-        tools:layout="@layout/fragment_app_setting" />
 </navigation>

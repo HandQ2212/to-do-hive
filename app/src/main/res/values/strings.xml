@@ -44,4 +44,10 @@
     <string name="completed">Completed</string>
     <string name="no_tasks">No task</string>
     <string name="in_progress">In progress</string>
+    <string name="account">Account</string>
+    <string name="change_account_name">Change account name</string>
+    <string name="change_account_password">Change account password</string>
+    <string name="change_account_image">Change account Image</string>
+    <string name="log_out">Log out</string>
+    <string name="profile">Profile</string>
 </resources>
