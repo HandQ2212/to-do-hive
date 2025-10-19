@@ -23,7 +23,7 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Profile"
+            android:text="@string/profile"
             android:textColor="@android:color/white"
             android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             app:layout_constraintStart_toStartOf="parent"
@@ -110,51 +110,16 @@
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
-        <!-- SECTION: Settings -->
-        <TextView
-            android:id="@+id/labelSettings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
-            android:text="Settings"
-            android:textColor="@color/gray"
-            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-            app:layout_constraintTop_toBottomOf="@id/statsRow"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <LinearLayout
-            android:id="@+id/groupSettings"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:divider="?attr/dividerHorizontal"
-            android:showDividers="middle"
-            app:layout_constraintTop_toBottomOf="@id/labelSettings"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <LinearLayout
-                android:id="@+id/rowAppSettings"
-                style="@style/ProfileRowStyle"
-                android:contentDescription="App Settings">
-                <ImageView style="@style/ProfileRowIcon" app:srcCompat="@drawable/ic_setting" />
-                <TextView style="@style/ProfileRowText"
-                    android:textColor="@android:color/white"
-                    android:text="App Settings" />
-                <ImageView style="@style/ProfileRowChevron" app:srcCompat="@drawable/ic_chevron_right_24" />
-            </LinearLayout>
-        </LinearLayout>
-
         <!-- SECTION: Account -->
         <TextView
             android:id="@+id/labelAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="22dp"
-            android:text="Account"
-            android:textColor="@color/gray"
+            android:text="@string/account"
+            android:textColor="@color/gray_text"
             android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-            app:layout_constraintTop_toBottomOf="@id/groupSettings"
+            app:layout_constraintTop_toBottomOf="@id/statsRow"
             app:layout_constraintStart_toStartOf="parent" />
 
         <LinearLayout
@@ -174,7 +139,7 @@
                 <ImageView style="@style/ProfileRowIcon" app:srcCompat="@drawable/ic_person"/>
                 <TextView style="@style/ProfileRowText"
                     android:textColor="@android:color/white"
-                    android:text="Change account name"/>
+                    android:text="@string/change_account_name"/>
                 <ImageView style="@style/ProfileRowChevron" app:srcCompat="@drawable/ic_chevron_right_24"/>
             </LinearLayout>
 
@@ -184,7 +149,8 @@
                 <ImageView style="@style/ProfileRowIcon" app:srcCompat="@drawable/ic_lock"/>
                 <TextView style="@style/ProfileRowText"
                     android:textColor="@android:color/white"
-                    android:text="Change account password"/>
+
+                    android:text="@string/change_account_password"/>
                 <ImageView style="@style/ProfileRowChevron" app:srcCompat="@drawable/ic_chevron_right_24"/>
             </LinearLayout>
 
@@ -194,7 +160,7 @@
                 <ImageView style="@style/ProfileRowIcon" app:srcCompat="@drawable/ic_camera"/>
                 <TextView style="@style/ProfileRowText"
                     android:textColor="@android:color/white"
-                    android:text="Change account Image"/>
+                    android:text="@string/change_account_image"/>
                 <ImageView style="@style/ProfileRowChevron" app:srcCompat="@drawable/ic_chevron_right_24"/>
             </LinearLayout>
         </LinearLayout>
@@ -210,7 +176,7 @@
             <ImageView style="@style/ProfileRowIconRed" app:srcCompat="@drawable/ic_logout"/>
             <TextView
                 style="@style/ProfileRowText"
-                android:text="Log out"
+                android:text="@string/log_out"
                 android:textColor="#FF4949" />
         </LinearLayout>
 

@@ -10,10 +10,10 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayoutMediator
 import com.proptit.todohive.R
 import com.proptit.todohive.data.local.model.OnboardingPage
 import com.proptit.todohive.databinding.FragmentOnboardingBinding
+import androidx.core.content.edit
 
 class OnboardingFragment : Fragment() {
 
@@ -111,7 +111,7 @@ class OnboardingFragment : Fragment() {
 
     private fun finishOnboarding() {
         requireContext().getSharedPreferences("app", Context.MODE_PRIVATE)
-            .edit().putBoolean("onboarding_done", true).apply()
+            .edit { putBoolean("onboarding_done", true) }
 
         findNavController().navigate(
             R.id.action_onboarding_to_start,
