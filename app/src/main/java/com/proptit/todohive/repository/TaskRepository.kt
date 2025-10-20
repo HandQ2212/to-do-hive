@@ -155,6 +155,10 @@ class TaskRepository(
         return restoredId
     }
 
+    fun observeByDayRange(start: Instant, end: Instant): LiveData<List<TaskWithCategory>> {
+        return taskDao.observeByDayRange(currentUserId, start, end)
+    }
+
     suspend fun restoreAll() {
         taskDao.restoreAll()
     }

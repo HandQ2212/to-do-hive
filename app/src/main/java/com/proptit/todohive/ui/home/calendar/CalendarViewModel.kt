@@ -11,6 +11,7 @@ import java.time.format.TextStyle
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 import kotlinx.coroutines.launch
+import java.time.ZoneId
 
 class CalendarViewModel(private val repo: TaskRepository) : ViewModel() {
 
@@ -35,6 +36,15 @@ class CalendarViewModel(private val repo: TaskRepository) : ViewModel() {
         val month = date.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
         "${month.uppercase(Locale.getDefault())} ${date.year}"
     }
+    val daysWithTasksInWeek: LiveData<Set<LocalDate>> =
+        currentWeekStart.switchMap { start ->
+            val zone = ZoneId.systemDefault()
+            val weekStartInstant = start.atStartOfDay(zone).toInstant()
+            val weekEndInstant   = start.plusDays(7).atStartOfDay(zone).toInstant()
+            repo.observeByDayRange(weekStartInstant, weekEndInstant).map { list ->
+                list.map { it.task.even_at.atZone(zone).toLocalDate() }.toSet()
+            }
+        }
 
     val selectedDateLabel: LiveData<String> = selectedDate.map { date ->
         when {

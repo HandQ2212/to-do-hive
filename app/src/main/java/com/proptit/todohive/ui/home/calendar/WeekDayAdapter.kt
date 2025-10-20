@@ -19,9 +19,15 @@ class WeekDayAdapter(
 ) : ListAdapter<LocalDate, WeekDayAdapter.DayViewHolder>(Diff) {
 
     private var selected: LocalDate? = null
+    private var datesWithTasks: Set<LocalDate> = emptySet()
+
 
     fun setSelected(date: LocalDate?) {
         selected = date
+        notifyDataSetChanged()
+    }
+    fun setTaskDates(dates: Set<LocalDate>) {
+        datesWithTasks = dates
         notifyDataSetChanged()
     }
 
@@ -33,7 +39,9 @@ class WeekDayAdapter(
 
     override fun onBindViewHolder(holder: DayViewHolder, position: Int) {
         val date = getItem(position)
-        holder.bind(date, date == selected)
+        val isSelected = date == selected
+        val hasTasks = datesWithTasks.contains(date)
+        holder.bind(date, isSelected, hasTasks)
         holder.itemView.setOnClickListener {
             setSelected(date)
             onClick(date)
@@ -44,8 +52,9 @@ class WeekDayAdapter(
         private val tvDay: TextView = view.findViewById(R.id.tvDay)
         private val tvDate: TextView = view.findViewById(R.id.tvDate)
         private val container: View = view.findViewById(R.id.container)
+        private val taskDot: View = view.findViewById(R.id.taskDot)
 
-        fun bind(date: LocalDate, isSelected: Boolean) {
+        fun bind(date: LocalDate, isSelected: Boolean, hasTasks: Boolean) {
             val ctx = itemView.context
             val locale = Locale.getDefault()
 
@@ -64,6 +73,8 @@ class WeekDayAdapter(
                 ctx,
                 if (isSelected) R.drawable.bg_weekday_selected else R.drawable.bg_weekday_normal
             )
+
+            taskDot.visibility = if (hasTasks) View.VISIBLE else View.GONE
         }
     }
 

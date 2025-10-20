@@ -85,6 +85,9 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
         viewModel.selectedDate.observe(viewLifecycleOwner) { sel ->
             weekAdapter.setSelected(sel)
         }
+        viewModel.daysWithTasksInWeek.observe(viewLifecycleOwner) { dates ->
+            weekAdapter.setTaskDates(dates)
+        }
         binding.btnPrevWeek.setOnClickListener { viewModel.previousWeek() }
         binding.btnNextWeek.setOnClickListener { viewModel.nextWeek() }
     }
