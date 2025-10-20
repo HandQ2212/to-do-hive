@@ -138,11 +138,12 @@ class TaskDetailViewModel(private val repo: TaskRepository) : ViewModel() {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     if (modelClass.isAssignableFrom(TaskDetailViewModel::class.java)) {
+                        val context = appContext.applicationContext
                         val db = AppDatabase.get(appContext)
                         val prefs = appContext.getSharedPreferences("app", Context.MODE_PRIVATE)
                         val currentUserId = prefs.getLong("current_user_id", 0L)
                         require(currentUserId > 0L) { "No logged-in user." }
-                        val repo = TaskRepository(db, currentUserId)
+                        val repo = TaskRepository(context, db, currentUserId)
                         return TaskDetailViewModel(repo) as T
                     }
                     throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

@@ -1,15 +1,18 @@
 package com.proptit.todohive.repository
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import com.proptit.todohive.data.local.AppDatabase
 import com.proptit.todohive.data.local.entity.CategoryEntity
 import com.proptit.todohive.data.local.entity.TaskEntity
 import com.proptit.todohive.data.local.model.TaskWithCategory
+import com.proptit.todohive.notification.NotificationScheduler
 import java.time.Instant
-import java.time.ZoneId
 import java.time.LocalDate
+import java.time.ZoneId
 
 class TaskRepository(
+    private val appContext: Context,
     private val db: AppDatabase,
     private val currentUserId: Long
 ) {
@@ -32,15 +35,6 @@ class TaskRepository(
         val end = day.plusDays(1).atStartOfDay(zone).minusNanos(1).toInstant()
         return taskDao.observeByDayRange(currentUserId, start, end)
     }
-
-    fun observeTaskWithCategory(taskId: Long): LiveData<TaskWithCategory?> =
-        taskDao.observeTaskWithCategory(taskId, currentUserId)
-
-    fun observeVisibleCategories(): LiveData<List<CategoryEntity>> =
-        categoryDao.observeVisibleForUser(currentUserId)
-
-    suspend fun getTaskWithCategoryById(taskId: Long): TaskWithCategory? =
-        taskDao.getTaskWithCategoryById(taskId, currentUserId)
 
     suspend fun getById(id: Long): TaskEntity? =
         taskDao.getById(id, currentUserId)
@@ -75,7 +69,9 @@ class TaskRepository(
             category_id = categoryId,
             description = description
         )
-        return taskDao.upsert(task)
+        val id = taskDao.upsert(task)
+        NotificationScheduler.scheduleTaskReminder(appContext, task.copy(task_id = id))
+        return id
     }
 
     suspend fun update(
@@ -97,16 +93,24 @@ class TaskRepository(
             userId = currentUserId
         )
         if (changed == 0) throw IllegalStateException("Task not found or not owned by current user.")
-    }
 
-    suspend fun setCompleted(id: Long, done: Boolean) {
-        val changed = taskDao.setCompleted(id, done, currentUserId)
-        if (changed == 0) throw IllegalStateException("Task not found or not owned by current user.")
+        NotificationScheduler.cancelTaskReminder(appContext, id)
+        val updated = taskDao.getById(id, currentUserId)
+        if (updated != null && !updated.is_deleted && !updated.is_completed) {
+            NotificationScheduler.scheduleTaskReminder(appContext, updated)
+        }
     }
 
     suspend fun toggleCompleted(taskId: Long) {
         val changed = taskDao.toggleCompleted(taskId, currentUserId)
         if (changed == 0) throw IllegalStateException("Task not found or not owned by current user.")
+        taskDao.getById(taskId, currentUserId)?.let { task ->
+            if (task.is_completed) {
+                NotificationScheduler.cancelTaskReminder(appContext, taskId)
+            } else if (!task.is_deleted) {
+                NotificationScheduler.scheduleTaskReminder(appContext, task)
+            }
+        }
     }
 
     suspend fun delete(id: Long) {
@@ -119,6 +123,7 @@ class TaskRepository(
     suspend fun moveToBin(taskId: Long, userId: Long, deletedAt: Instant) {
         val changed = taskDao.moveToBin(taskId, userId, deletedAt)
         if (changed == 0) throw IllegalStateException("Task not found or not owned by current user.")
+        NotificationScheduler.cancelTaskReminder(appContext, taskId)
     }
 
     suspend fun moveToBin(taskId: Long) {
@@ -128,18 +133,26 @@ class TaskRepository(
     suspend fun restoreFromBin(taskId: Long) {
         val changed = taskDao.restoreFromBin(taskId, currentUserId)
         if (changed == 0) throw IllegalStateException("Task not found or not owned by current user.")
+        taskDao.getById(taskId, currentUserId)?.let { task ->
+            if (!task.is_completed && !task.is_deleted) {
+                NotificationScheduler.scheduleTaskReminder(appContext, task)
+            }
+        }
     }
 
     suspend fun deleteForever(taskId: Long) {
         val changed = taskDao.deleteForever(taskId, currentUserId)
         if (changed == 0) throw IllegalStateException("Task not found or not owned by current user.")
+        NotificationScheduler.cancelTaskReminder(appContext, taskId)
     }
 
     suspend fun restore(task: TaskEntity): Long {
         if (task.user_id != currentUserId) {
             throw IllegalArgumentException("Cannot restore task of another user.")
         }
-        return taskDao.upsert(task.copy(is_deleted = false, deleted_at = null))
+        val restoredId = taskDao.upsert(task.copy(is_deleted = false, deleted_at = null))
+        NotificationScheduler.scheduleTaskReminder(appContext, task.copy(task_id = restoredId, is_deleted = false, deleted_at = null))
+        return restoredId
     }
 
     suspend fun restoreAll() {
@@ -149,6 +162,7 @@ class TaskRepository(
     suspend fun clearAll() {
         taskDao.clearAll()
     }
+
     fun getTasksByDateLive(date: LocalDate): LiveData<List<TaskWithCategory>> {
         val zone = ZoneId.systemDefault()
         val startMillis = date.atStartOfDay(zone).toInstant().toEpochMilli()

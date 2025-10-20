@@ -38,7 +38,8 @@ class TaskBinViewModel(private val repo: TaskRepository) : ViewModel() {
                         val prefs = appContext.getSharedPreferences("app", Context.MODE_PRIVATE)
                         val currentUserId = prefs.getLong("current_user_id", 0L)
                         require(currentUserId > 0L) { "No logged-in user." }
-                        val repo = TaskRepository(db, currentUserId)
+                        // SỬA Ở ĐÂY: truyền appContext vào Repository
+                        val repo = TaskRepository(appContext.applicationContext, db, currentUserId)
                         return TaskBinViewModel(repo) as T
                     }
                     throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
