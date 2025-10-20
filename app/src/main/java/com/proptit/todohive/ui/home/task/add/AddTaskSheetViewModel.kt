@@ -43,12 +43,12 @@ class AddTaskSheetViewModel(app: Application) : AndroidViewModel(app) {
         title.map { !it.isNullOrBlank() }
 
     private val repo: TaskRepository by lazy {
-        val appCtx = getApplication<Application>()
+        val appCtx = getApplication<Application>().applicationContext
         val db = AppDatabase.get(appCtx)
         val prefs = appCtx.getSharedPreferences("app", Context.MODE_PRIVATE)
         val currentUserId = prefs.getLong("current_user_id", 0L)
         require(currentUserId > 0L) { "No logged-in user. current_user_id is missing." }
-        TaskRepository(db, currentUserId)
+        TaskRepository(appCtx, db, currentUserId)
     }
 
     fun setPickedInstant(instant: Instant) {

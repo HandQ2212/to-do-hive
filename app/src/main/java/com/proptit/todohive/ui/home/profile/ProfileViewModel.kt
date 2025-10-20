@@ -115,6 +115,7 @@ class ProfileViewModel(
 
 class ProfileViewModelFactory(private val ctx: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        val appContext = ctx.applicationContext
         val prefs = ctx.getSharedPreferences("app", Context.MODE_PRIVATE)
         val userId = prefs.getLong("current_user_id", -1L).takeIf { it > 0L }
 
@@ -122,7 +123,7 @@ class ProfileViewModelFactory(private val ctx: Context) : ViewModelProvider.Fact
 
         val db = AppDatabase.get(ctx)
         val userDao = db.userDao()
-        val taskRepo = userId?.let { TaskRepository(db, it) }
+        val taskRepo = userId?.let { TaskRepository(appContext, db, it) }
 
         return ProfileViewModel(userDao, taskRepo, userId) as T
     }

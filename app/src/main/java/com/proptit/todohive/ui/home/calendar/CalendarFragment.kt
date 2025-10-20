@@ -30,7 +30,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
         val userId = ctx.getSharedPreferences("app", Context.MODE_PRIVATE)
             .getLong("current_user_id", 0L)
         require(userId > 0L) { "No logged-in user." }
-        CalendarViewModel.Factory(TaskRepository(db, userId))
+        CalendarViewModel.Factory(TaskRepository(ctx, db, userId))
     }
 
     private val taskAdapter by lazy {
@@ -57,7 +57,7 @@ class CalendarFragment : Fragment(R.layout.fragment_calendar) {
         binding.segFilter.addOnButtonCheckedListener { _: MaterialButtonToggleGroup, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
             when (checkedId) {
-                R.id.btnSegToday -> viewModel.setCompletedFilter(false)
+                R.id.btnSegToday     -> viewModel.setCompletedFilter(false)
                 R.id.btnSegCompleted -> viewModel.setCompletedFilter(true)
             }
         }
