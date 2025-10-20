@@ -1,69 +1,68 @@
-# Task Reminder App
+# ToDoHive App
 
-Ứng dụng Android hỗ trợ người dùng quản lý công việc: tạo nhắc nhở, sắp xếp theo lịch, chế độ tập trung, chỉnh sửa hồ sơ và tùy chỉnh giao diện.
-
----
-
-## Luồng hoạt động (Activity Flow)
-
-1. Intro Screen
-    - Chỉ hiển thị khi người dùng mở app lần đầu.
-    - Sau khi hoàn thành Intro → chuyển đến màn hình Login/Register.
-
-2. Authentication
-    - Login: nếu đăng nhập thành công → vào MainActivity.
-    - Register: nếu chưa có tài khoản, cần đăng ký mới → sau khi thành công → vào MainActivity.
-
-3. MainActivity với Bottom Navigation  
-   Gồm 4 Fragment chính:
-    - Home Fragment: hiển thị các task của ngày hôm nay.
-    - Calendar Fragment: hiển thị công việc theo ngày/tuần/tháng mà người dùng chọn.
-    - Focus Fragment: chế độ tập trung, bật Do Not Disturb (tắt thông báo), hẹn giờ đếm ngược.
-    - Profile Fragment:
-        - Chỉnh sửa tên, mật khẩu, ảnh.
-        - Vào App Settings: đổi màu nền, cỡ chữ, font.
-        - Logout: quay trở lại màn Login/Register.
+An Android application that helps users manage their tasks — create reminders, organize schedules, edit profiles, and customize the interface.
 
 ---
 
-## Công nghệ sử dụng
+## Activity Flow
 
-- Kotlin + XML layout
-- MVVM Architecture (ViewModel + LiveData + Repository + Room)
-- Room Database (CRUD cho Task)
-- Material Design Components
-- Navigation Component + BottomNavigationView
+1. **Intro Screen**
 
----
+   * Displayed only the first time the user opens the app.
+   * After completion → navigates to the Login/Register screen.
 
-## Các tài liệu bắt buộc đi kèm
+2. **Authentication**
 
-- File Figma giao diện ![Figma](https://www.figma.com/design/LRVrvGHMESFCsBnefyLQmP/UpTodo---Todo-list-app-UI-Kit--Community-?node-id=0-1&p=f&t=FNBNRS5aGF9ye1jw-0)
-- Biểu đồ UML Database Design 
-  - Entity Relationship Diagram:
-  ![](app/uml/ERDiagram.png)
-  - Activity Diagram:
-  ![](app/uml/ActivityDiagram.png)
-  - Class Diagram:
-- Link Project Management [Linear Board](https://linear.app/todohive/team/TOD/active)
+   * **Login:** If successful → proceed to `MainActivity`.
+   * **Register:** If the user has no account, they must register first → upon success → proceed to `MainActivity`.
 
----
+3. **MainActivity with Bottom Navigation**
+   Includes four main fragments:
 
-## Tính năng chính
+   * **Home Fragment:** Displays today’s tasks.
+   * **Calendar Fragment:** Shows tasks by day/week/month as selected by the user.
+   * **Bin Fragment:** Acts as a trash bin containing deleted tasks; users can restore or permanently delete them here.
+   * **Profile Fragment:**
 
-- CRUD Task (thêm, sửa, xoá, xem)
-- Archive Task
-- Notification: nhắc nhở sắp đến hạn, báo công việc bị lỡ
-- Focus Mode: đếm ngược, tắt thông báo
-- Profile: chỉnh sửa thông tin, logout
-- App Settings: đổi theme, font, kích thước chữ
+     * Edit name, password, and profile image.
+     * **Logout:** Returns to the Login/Register screen.
 
 ---
 
-## Tính năng nâng cao (tùy chọn)
+## Technologies Used
+
+* **Kotlin** + **XML Layout**
+* **MVVM Architecture** (ViewModel + LiveData + Repository + Room)
+* **Room Database** (CRUD operations for tasks)
+* **Material Design Components**
+* **Cloudinary** for image upload and URL storage in Room Database
+* **Navigation Component** + **BottomAppBar**
+
+---
+
+## Required Supporting Documents
+
+* **Figma Design File:** [Figma](https://www.figma.com/design/LRVrvGHMESFCsBnefyLQmP/UpTodo---Todo-list-app-UI-Kit--Community-?node-id=0-1&p=f&t=FNBNRS5aGF9ye1jw-0)
+* **UML Diagrams:**
+
+  * **Entity Relationship Diagram (ERD):**
+    ![](app/uml/ERDiagram.png)
+  * **Activity Diagram:**
+    ![](app/uml/ActivityDiagram.png)
+* **Project Management Link:** [Linear Board](https://linear.app/todohive/team/TOD/active)
+
+---
+
+## Key Features
+
+* **CRUD Tasks:** Add, edit, delete, and view tasks.
+* **Calendar View:** Filter and browse tasks by date.
+* **Notifications:** Remind users of upcoming or missed tasks.
+* **Restore & Delete:** Manage deleted tasks in the Bin.
+* **Profile Management:** Edit user info and log out.
 
 ---
 
 ## License
 
-MIT License – tự do sử dụng và phát triển.
+**MIT License** – free to use and develop.
